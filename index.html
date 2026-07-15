@@ -256,7 +256,7 @@
           <div class="quote-banner"><span class="txt">Small steps, right choices, big momentum.</span></div>
         </div>
         <div class="actions">
-          <button class="btn-ghost" onclick="switchView('work'); setTimeout(()=>document.getElementById('milestoneInput').focus(),60);">+ Milestone</button>
+          <button class="btn-ghost" onclick="switchView('work'); setTimeout(()=>document.getElementById('milestoneInput').focus(),60);">+ Work To-do</button>
           <button class="btn-primary" onclick="document.getElementById('todayInput').focus();">+ Add Task</button>
         </div>
       </div>
@@ -275,7 +275,7 @@
         <div class="stat-card light">
           <div class="icon">📄</div>
           <div class="value" id="msStatValue">0/0</div>
-          <div class="label">Report milestones</div>
+          <div class="label">Work to-dos</div>
         </div>
         <div class="stat-card light">
           <div class="icon">💼</div>
@@ -326,19 +326,19 @@
     <section class="view" id="view-work">
       <div class="view-head">
         <h1>Work</h1>
-        <div class="sub">The reporting project + your 4-day work week.</div>
+        <div class="sub">Your ongoing work to-dos + 4-day work week.</div>
       </div>
 
       <div class="grid2b">
         <div class="panel" id="milestones">
           <div class="panel-head">
-            <h2>Reporting Project — Milestones</h2>
+            <h2>Work To-Dos</h2>
             <button class="plus-btn" onclick="document.getElementById('milestoneInput').focus()">+</button>
           </div>
-          <div class="desc">Break the deliverable into pieces. Knock them down one at a time.</div>
+          <div class="desc">Ongoing work items — add anything, check it off when done.</div>
           <ul class="task-list" id="milestoneList"></ul>
           <div class="add-row">
-            <input type="text" id="milestoneInput" placeholder="Add a milestone…">
+            <input type="text" id="milestoneInput" placeholder="Add a to-do…">
             <button onclick="addMilestone()">Add</button>
           </div>
         </div>
@@ -350,7 +350,7 @@
               <div class="lbl">complete</div>
             </div>
           </div>
-          <div class="ring-caption">Reporting project<br>progress</div>
+          <div class="ring-caption">Work to-dos<br>progress</div>
         </div>
       </div>
 
@@ -500,7 +500,7 @@
         <div class="rollup-grid">
           <div class="rollup-item"><div class="num" id="rollupCheckins">0 / 7</div><div class="lbl">Check-ins logged</div></div>
           <div class="rollup-item"><div class="num" id="rollupTasks">0</div><div class="lbl">Tasks completed</div></div>
-          <div class="rollup-item"><div class="num" id="rollupMilestones">0</div><div class="lbl">Milestones done</div></div>
+          <div class="rollup-item"><div class="num" id="rollupMilestones">0</div><div class="lbl">To-dos done</div></div>
           <div class="rollup-item"><div class="num" id="rollupRoadmap">0</div><div class="lbl">Roadmap steps done</div></div>
           <div class="rollup-item"><div class="num" id="rollupApps">0</div><div class="lbl">Applications sent</div></div>
         </div>
@@ -746,7 +746,7 @@ function renderMilestones() {
   const ul = document.getElementById('milestoneList');
   ul.innerHTML = '';
   if (state.milestones.length === 0) {
-    ul.innerHTML = '<div class="empty-hint">No milestones yet — break the report into 3-6 concrete pieces.</div>';
+    ul.innerHTML = '<div class="empty-hint">No to-dos yet — add anything you\'re tracking for work.</div>';
   }
   state.milestones.forEach(m => {
     const li = document.createElement('li');
