@@ -535,8 +535,68 @@
   </main>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
 const STORAGE_KEY = 'reset_dashboard_state_v1';
+const LOCAL_TS_KEY = 'reset_dashboard_state_v1_ts';
+const BACKUP_KEY_STORAGE = 'reset_dashboard_backup_key';
+const SUPABASE_URL = 'https://fczkgkfrhneicamjsxqb.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_jtL4Lonmr46SS8Vd7_LayA_xyzgMwOB';
+const supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+function getBackupKey() {
+  let k = localStorage.getItem(BACKUP_KEY_STORAGE);
+  if (!k) { k = crypto.randomUUID(); localStorage.setItem(BACKUP_KEY_STORAGE, k); }
+  return k;
+}
+const backupKey = getBackupKey();
+function setSyncStatus(text, ok) {
+  let el = document.getElementById('syncStatus');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'syncStatus';
+    el.style.cssText = 'position:fixed;bottom:10px;right:14px;font-size:11px;padding:4px 9px;border-radius:6px;background:#fff;border:1px solid #e8ece9;z-index:999;';
+    document.body.appendChild(el);
+  }
+  el.textContent = text;
+  el.style.color = ok === false ? '#dc2626' : (ok === true ? '#1f9d55' : '#7c8c85');
+}
+let syncTimer = null;
+async function pushBackup() {
+  setSyncStatus('Backing up…');
+  try {
+    const updated_at = new Date().toISOString();
+    const { error } = await supa.from('dashboard_backup').upsert({ access_key: backupKey, data: state, updated_at });
+    if (error) throw error;
+    localStorage.setItem(LOCAL_TS_KEY, Date.parse(updated_at).toString());
+    setSyncStatus('Backed up ✓', true);
+  } catch (e) {
+    console.warn('Backup sync failed', e);
+    setSyncStatus('Backup failed — saved locally only', false);
+  }
+}
+async function pullBackupIfNewer() {
+  try {
+    const { data, error } = await supa.from('dashboard_backup').select('data, updated_at').eq('access_key', backupKey).maybeSingle();
+    if (error) throw error;
+    if (!data) { pushBackup(); return; }
+    const localTs = parseInt(localStorage.getItem(LOCAL_TS_KEY) || '0', 10);
+    const remoteTs = Date.parse(data.updated_at);
+    if (remoteTs > localTs) {
+      state = data.data;
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      localStorage.setItem(LOCAL_TS_KEY, remoteTs.toString());
+      renderAll();
+      setSyncStatus('Restored from backup ✓', true);
+    } else if (localTs > remoteTs) {
+      pushBackup();
+    } else {
+      setSyncStatus('Backed up ✓', true);
+    }
+  } catch (e) {
+    console.warn('Backup pull failed', e);
+    setSyncStatus('Backup unavailable — using local data', false);
+  }
+}
 const START_DATE = new Date(2026, 6, 15); // July 15, 2026
 
 const ROADMAP_SEED = [
@@ -600,7 +660,11 @@ function loadState() {
   return { today: [], tomorrow: [], tracker: [], weeklyManual: {}, checkins: [], milestones: [], completedLog: [] };
 }
 let state = loadState();
-function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+function save() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  clearTimeout(syncTimer);
+  syncTimer = setTimeout(pushBackup, 1500);
+}
 function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
 function todayISO() {
   const d = new Date();
@@ -1063,6 +1127,7 @@ function renderAll() {
   renderCarryForward();
 }
 renderAll();
+pullBackupIfNewer();
 </script>
 </body>
 </html>
