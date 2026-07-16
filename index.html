@@ -13,6 +13,10 @@
     --amber: #d97706;
     --amber-light: #fef3c7;
     --red: #dc2626;
+    --blue: #2563eb;
+    --blue-light: #dbeafe;
+    --purple: #7c3aed;
+    --purple-light: #ede9fe;
     --border: #e8ece9;
     --bg: #f3f6f4;
     --card: #ffffff;
@@ -216,6 +220,21 @@
   .rm-item .rm-desc { font-size: 11px; color: var(--muted); margin-top: 2px; }
   .rm-tag { font-size: 9px; font-weight: 700; color: var(--muted); border: 1px solid var(--border); padding: 1px 6px; border-radius: 6px; margin-left: 6px; }
 
+  /* Work priority roadmap — color-coded sections */
+  .wr-section { border-radius: 8px; padding: 8px 10px; margin: 16px 0 8px; }
+  .wr-section:first-child { margin-top: 2px; }
+  .wr-section-title { font-weight: 800; font-size: 12px; }
+  .wr-section-sub { font-size: 10.5px; font-weight: 600; opacity: .85; margin-top: 1px; }
+  .wr-section-blue { background: var(--blue-light); color: var(--blue); }
+  .wr-section-purple { background: var(--purple-light); color: var(--purple); }
+  .wr-section-amber { background: var(--amber-light); color: var(--amber); }
+  .wr-section-work { background: var(--accent-light); color: var(--accent-dark); }
+  .wr-num { flex-shrink: 0; width: 20px; height: 20px; border-radius: 999px; display: flex; align-items: center; justify-content: center; font-size: 10.5px; font-weight: 800; margin-top: 1px; }
+  .wr-num-blue { background: var(--blue-light); color: var(--blue); }
+  .wr-num-purple { background: var(--purple-light); color: var(--purple); }
+  .wr-num-amber { background: var(--amber-light); color: var(--amber); }
+  .wr-num-work { background: var(--accent-light); color: var(--accent-dark); }
+
   /* Salary cheat sheet */
   .cheat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
   @media (max-width: 800px) { .cheat-grid { grid-template-columns: 1fr; } }
@@ -349,6 +368,16 @@
           </div>
           <div class="ring-caption">Work to-dos<br>progress</div>
         </div>
+      </div>
+
+      <div class="panel full-row" id="workRoadmap">
+        <div class="panel-head">
+          <h2>Priorities Roadmap</h2>
+          <span class="tally" id="workRoadmapCount">0 / 0 complete</span>
+        </div>
+        <div class="desc">France / Belgium / Netherlands push — one-to-one file, Protection Tour, prospecting, and weekly tracking. Check off as you go.</div>
+        <div class="bar-outer"><div class="bar-inner" id="workRoadmapBar" style="width:0%"></div></div>
+        <div class="rm-scroll" id="workRoadmapList"></div>
       </div>
 
       <details class="panel" id="reference">
@@ -677,6 +706,35 @@ const ROADMAP_SEED = [
   { phase: 'Ongoing · Week 3+ · Active Search', text: 'Weekly review every Friday', due: 'Ongoing', tag: 'Systems', whatGood: '30-min self-check: applications sent, responses received, interviews booked, blockers. Adjust targeting if response rate below 10%.' }
 ];
 
+const WORK_PRIORITY_SECTIONS = [
+  { id: 1, title: 'Priority 1 — One-to-One File Update', sub: 'Deadline: end of July — feeds directly into September budget prep', color: 'blue' },
+  { id: 2, title: 'Priority 2 — Protection Tour Plan', sub: 'France, Belgium, Netherlands — July / Aug / Sept', color: 'purple' },
+  { id: 3, title: 'Priority 3 — Shift Time to Active Prospecting', sub: 'Ongoing — starts now', color: 'amber' },
+  { id: 4, title: 'Priority 4 — Weekly Tracking Habit', sub: 'Recurring', color: 'work' },
+];
+const WORK_ROADMAP_SEED = [
+  { section: 1, text: 'Pull current list of every open opportunity in France, Belgium, Netherlands' },
+  { section: 1, text: 'For each opportunity, fill in contact name, email, and direct phone number' },
+  { section: 1, text: 'For each, enter business opportunity value in €' },
+  { section: 1, text: 'For each, correct the status field to reflect reality today (not a stale April note)' },
+  { section: 1, text: 'Flag every contact at "no answer since [month]" — decide per one: re-engage by phone this week, escalate contact method, or archive as dead' },
+  { section: 1, text: 'Add product potential for each line' },
+  { section: 1, text: 'Add expected close timeline/date for each' },
+  { section: 2, text: 'List target operators/distributors per country' },
+  { section: 2, text: 'Pick candidate month(s) and rough dates for each country visit' },
+  { section: 2, text: 'Draft a day-by-day itinerary (cities, meetings, contacts)' },
+  { section: 2, text: 'Confirm meetings with key contacts before booking travel' },
+  { section: 2, text: 'Book travel logistics' },
+  { section: 2, text: 'Send draft tour plan to Yannick for sign-off' },
+  { section: 3, text: 'Block calendar time so ~90% of week is calls/visits/meetings, ~10% is admin/LinkedIn/email' },
+  { section: 3, text: 'Set a personal daily call quota (pick a number you can sustain, e.g. 5-8 calls/day)' },
+  { section: 3, text: 'Convert every stalled LinkedIn/email-only contact into a phone call attempt this week' },
+  { section: 3, text: 'Set a monthly target for face-to-face meetings booked' },
+  { section: 4, text: "Every Friday: update one-to-one file statuses from the week's activity" },
+  { section: 4, text: 'Every Friday: log # of calls made, meetings held, new opportunities added' },
+  { section: 4, text: 'Monthly: compare pipeline growth vs. prior month, note trend for your own check-in with Yannick' },
+];
+
 const TARGET_CO_SEED = [
   { company: 'Datadog', product: 'Observability SaaS', stage: 'Public', hq: 'Paris + Remote', english: 'Yes', pmf: 'High', openRoles: 'Yes - AE EMEA', priority: 'High' },
   { company: 'Aircall', product: 'Cloud telephony SaaS', stage: 'Series D', hq: 'Paris HQ', english: 'Yes', pmf: 'High', openRoles: 'Yes - AE', priority: 'High' },
@@ -745,6 +803,7 @@ function seedDefaults() {
   let changed = false;
   if (!state.completedLog) { state.completedLog = []; changed = true; }
   if (!state.roadmap) { state.roadmap = ROADMAP_SEED.map(x => ({ id: uid(), done: false, ...x })); changed = true; }
+  if (!state.workRoadmap) { state.workRoadmap = WORK_ROADMAP_SEED.map(x => ({ id: uid(), done: false, ...x })); changed = true; }
   if (!state.targetCos) { state.targetCos = TARGET_CO_SEED.map(x => ({ id: uid(), applied: false, ...x })); changed = true; }
   if (!state.tracker) { state.tracker = []; changed = true; }
   if (state.tracker.length === 0) { state.tracker = TRACKER_SEED.map(x => ({ id: uid(), ...x })); changed = true; }
@@ -1106,6 +1165,41 @@ function renderRoadmap() {
 }
 function toggleRoadmap(id) { const it = state.roadmap.find(x => x.id === id); if (it) { it.done = !it.done; logCompletion(it.id, 'roadmap', 'JobSearch', it.text, it.done); save(); renderRoadmap(); renderRollup(); } }
 
+function renderWorkRoadmap() {
+  const container = document.getElementById('workRoadmapList');
+  container.innerHTML = '';
+  let lastSection = null;
+  let idx = 0;
+  state.workRoadmap.forEach(item => {
+    const meta = WORK_PRIORITY_SECTIONS.find(s => s.id === item.section);
+    if (item.section !== lastSection) {
+      idx = 0;
+      const h = document.createElement('div');
+      h.className = 'wr-section wr-section-' + meta.color;
+      h.innerHTML = `<div class="wr-section-title">${escapeHtml(meta.title)}</div><div class="wr-section-sub">${escapeHtml(meta.sub)}</div>`;
+      container.appendChild(h);
+      lastSection = item.section;
+    }
+    idx++;
+    const row = document.createElement('div');
+    row.className = 'rm-item' + (item.done ? ' done' : '');
+    row.innerHTML = `
+      <input type="checkbox" ${item.done ? 'checked' : ''} onchange="toggleWorkRoadmap('${item.id}')">
+      <span class="wr-num wr-num-${meta.color}">${idx}</span>
+      <div class="rm-body">
+        <div class="rm-title-row">
+          <span class="rm-title">${escapeHtml(item.text)}</span>
+        </div>
+      </div>`;
+    container.appendChild(row);
+  });
+  const done = state.workRoadmap.filter(x => x.done).length;
+  const total = state.workRoadmap.length;
+  document.getElementById('workRoadmapCount').textContent = done + ' / ' + total + ' complete';
+  document.getElementById('workRoadmapBar').style.width = (total ? done/total*100 : 0) + '%';
+}
+function toggleWorkRoadmap(id) { const it = state.workRoadmap.find(x => x.id === id); if (it) { it.done = !it.done; logCompletion(it.id, 'workRoadmap', 'Work', it.text, it.done); save(); renderWorkRoadmap(); renderRollup(); renderWeeklyRecap(); } }
+
 function renderTargets() {
   const now = new Date();
   const wk = isoWeekKey(now);
@@ -1212,11 +1306,11 @@ function renderWeeklyRecap() {
   if (rangeEl) rangeEl.textContent = fmtShort(cutoff) + ' – ' + fmtShort(new Date()) + ' · work items completed';
 
   const items = state.completedLog
-    .filter(l => l.date >= cutoffISO && (l.source === 'milestone' || (l.source === 'task' && l.type === 'Work')))
+    .filter(l => l.date >= cutoffISO && (l.source === 'milestone' || l.source === 'workRoadmap' || (l.source === 'task' && l.type === 'Work')))
     .sort((a, b) => b.date.localeCompare(a.date));
 
   if (items.length === 0) {
-    list.innerHTML = '<div class="empty-hint">Nothing completed in the last 7 days yet — check off Work tasks or Work To-Dos to build your talking points.</div>';
+    list.innerHTML = '<div class="empty-hint">Nothing completed in the last 7 days yet — check off Work tasks, Work To-Dos, or Priorities Roadmap items to build your talking points.</div>';
     return;
   }
   list.innerHTML = '';
@@ -1224,7 +1318,7 @@ function renderWeeklyRecap() {
     const li = document.createElement('li');
     const badge = document.createElement('span');
     badge.className = 'tag-badge tag-Work';
-    badge.textContent = it.source === 'milestone' ? 'To-Do' : 'Task';
+    badge.textContent = it.source === 'milestone' ? 'To-Do' : (it.source === 'workRoadmap' ? 'Project' : 'Task');
     const txt = document.createElement('span');
     txt.className = 'txt';
     txt.textContent = it.text;
@@ -1240,6 +1334,7 @@ function renderAll() {
   renderHeader();
   renderMilestones();
   renderTaskListsAll();
+  renderWorkRoadmap();
   renderTracker();
   renderTargetCos();
   renderRoadmap();
