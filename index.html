@@ -221,20 +221,24 @@
   .rm-item .rm-desc { font-size: 11px; color: var(--muted); margin-top: 2px; }
   .rm-tag { font-size: 9px; font-weight: 700; color: var(--muted); border: 1px solid var(--border); padding: 1px 6px; border-radius: 6px; margin-left: 6px; }
 
-  /* Work priority roadmap — color-coded sections */
-  .wr-section { border-radius: 8px; padding: 8px 10px; margin: 16px 0 8px; }
-  .wr-section:first-child { margin-top: 2px; }
-  .wr-section-title { font-weight: 800; font-size: 12px; }
-  .wr-section-sub { font-size: 10.5px; font-weight: 600; opacity: .85; margin-top: 1px; }
+  /* Work priority roadmap — color-coded work packages */
+  .wr-progress-row { display: flex; flex-direction: column; align-items: center; margin: 10px 0 16px; }
+  .wr-progress-row .ring-caption { margin-top: 8px; font-size: 11px; color: var(--muted); }
+  .wr-section-title { font-weight: 800; }
+  .wr-section-sub { font-weight: 600; opacity: .85; margin-top: 1px; }
+  .wr-section-cell { padding: 10px !important; border-bottom: none !important; }
   .wr-section-blue { background: var(--blue-light); color: var(--blue); }
   .wr-section-purple { background: var(--purple-light); color: var(--purple); }
   .wr-section-amber { background: var(--amber-light); color: var(--amber); }
   .wr-section-work { background: var(--accent-light); color: var(--accent-dark); }
-  .wr-num { flex-shrink: 0; width: 20px; height: 20px; border-radius: 999px; display: flex; align-items: center; justify-content: center; font-size: 10.5px; font-weight: 800; margin-top: 1px; }
+  .wr-num { display: inline-flex; align-items: center; justify-content: center; font-weight: 800; padding: 3px 8px; border-radius: 999px; white-space: nowrap; }
   .wr-num-blue { background: var(--blue-light); color: var(--blue); }
   .wr-num-purple { background: var(--purple-light); color: var(--purple); }
   .wr-num-amber { background: var(--amber-light); color: var(--amber); }
   .wr-num-work { background: var(--accent-light); color: var(--accent-dark); }
+  .wr-action, .wr-desc-cell { font-weight: 400; }
+  .wr-row.done td { color: var(--muted); }
+  #workRoadmapTable select, #workRoadmapTable input[type=text] { width: 100%; }
 
   /* Salary cheat sheet */
   .cheat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
@@ -349,25 +353,28 @@
         </div>
       </div>
 
-      <div class="grid2b">
-        <div class="panel" id="workRoadmap">
-          <div class="panel-head">
-            <h2>Priorities Roadmap</h2>
-            <span class="tally" id="workRoadmapCount">0 / 0 complete</span>
-          </div>
-          <div class="desc">France / Belgium / Netherlands push — one-to-one file, Protection Tour, prospecting, and weekly tracking. Check off as you go.</div>
-          <div class="bar-outer"><div class="bar-inner" id="workRoadmapBar" style="width:0%"></div></div>
-          <div class="rm-list" id="workRoadmapList"></div>
+      <div class="panel full-row" id="workRoadmap">
+        <div class="panel-head">
+          <h2>Priorities Roadmap</h2>
+          <span class="tally" id="workRoadmapCount">0 / 0 complete</span>
         </div>
+        <div class="desc">France / Belgium / Netherlands push — one-to-one file, Protection Tour, prospecting, and weekly tracking. Work packages numbered WP1.1, WP2.1, etc.</div>
 
-        <div class="panel ring-wrap">
+        <div class="wr-progress-row">
           <div class="ring" id="wrRing">
             <div class="ring-inner">
               <div class="pct" id="wrPct">0%</div>
               <div class="lbl">complete</div>
             </div>
           </div>
-          <div class="ring-caption">Priorities roadmap<br>progress</div>
+          <div class="ring-caption">Overall progress</div>
+        </div>
+
+        <div class="table-scroll">
+          <table id="workRoadmapTable">
+            <thead><tr><th>WP</th><th>Action</th><th>Description</th><th>Status</th><th>Notes</th></tr></thead>
+            <tbody id="workRoadmapBody"></tbody>
+          </table>
         </div>
       </div>
 
@@ -704,26 +711,26 @@ const WORK_PRIORITY_SECTIONS = [
   { id: 4, title: 'Priority 4 — Weekly Tracking Habit', sub: 'Recurring', color: 'work' },
 ];
 const WORK_ROADMAP_SEED = [
-  { section: 1, text: 'Pull current list of every open opportunity in France, Belgium, Netherlands' },
-  { section: 1, text: 'For each opportunity, fill in contact name, email, and direct phone number' },
-  { section: 1, text: 'For each, enter business opportunity value in €' },
-  { section: 1, text: 'For each, correct the status field to reflect reality today (not a stale April note)' },
-  { section: 1, text: 'Flag every contact at "no answer since [month]" — decide per one: re-engage by phone this week, escalate contact method, or archive as dead' },
-  { section: 1, text: 'Add product potential for each line' },
-  { section: 1, text: 'Add expected close timeline/date for each' },
-  { section: 2, text: 'List target operators/distributors per country' },
-  { section: 2, text: 'Pick candidate month(s) and rough dates for each country visit' },
-  { section: 2, text: 'Draft a day-by-day itinerary (cities, meetings, contacts)' },
-  { section: 2, text: 'Confirm meetings with key contacts before booking travel' },
-  { section: 2, text: 'Book travel logistics' },
-  { section: 2, text: 'Send draft tour plan to Yannick for sign-off' },
-  { section: 3, text: 'Block calendar time so ~90% of week is calls/visits/meetings, ~10% is admin/LinkedIn/email' },
-  { section: 3, text: 'Set a personal daily call quota (pick a number you can sustain, e.g. 5-8 calls/day)' },
-  { section: 3, text: 'Convert every stalled LinkedIn/email-only contact into a phone call attempt this week' },
-  { section: 3, text: 'Set a monthly target for face-to-face meetings booked' },
-  { section: 4, text: "Every Friday: update one-to-one file statuses from the week's activity" },
-  { section: 4, text: 'Every Friday: log # of calls made, meetings held, new opportunities added' },
-  { section: 4, text: 'Monthly: compare pipeline growth vs. prior month, note trend for your own check-in with Yannick' },
+  { section: 1, action: 'Pull opportunity list', text: 'Pull current list of every open opportunity in France, Belgium, Netherlands' },
+  { section: 1, action: 'Fill contact details', text: 'For each opportunity, fill in contact name, email, and direct phone number' },
+  { section: 1, action: 'Enter opportunity value', text: 'For each, enter business opportunity value in €' },
+  { section: 1, action: 'Correct status field', text: 'For each, correct the status field to reflect reality today (not a stale April note)' },
+  { section: 1, action: 'Triage stale contacts', text: 'Flag every contact at "no answer since [month]" — decide per one: re-engage by phone this week, escalate contact method, or archive as dead' },
+  { section: 1, action: 'Add product potential', text: 'Add product potential for each line' },
+  { section: 1, action: 'Add close timeline', text: 'Add expected close timeline/date for each' },
+  { section: 2, action: 'List targets', text: 'List target operators/distributors per country' },
+  { section: 2, action: 'Pick visit dates', text: 'Pick candidate month(s) and rough dates for each country visit' },
+  { section: 2, action: 'Draft itinerary', text: 'Draft a day-by-day itinerary (cities, meetings, contacts)' },
+  { section: 2, action: 'Confirm meetings', text: 'Confirm meetings with key contacts before booking travel' },
+  { section: 2, action: 'Book travel', text: 'Book travel logistics' },
+  { section: 2, action: 'Send for sign-off', text: 'Send draft tour plan to Yannick for sign-off' },
+  { section: 3, action: 'Block calendar time', text: 'Block calendar time so ~90% of week is calls/visits/meetings, ~10% is admin/LinkedIn/email' },
+  { section: 3, action: 'Set call quota', text: 'Set a personal daily call quota (pick a number you can sustain, e.g. 5-8 calls/day)' },
+  { section: 3, action: 'Convert stalled contacts', text: 'Convert every stalled LinkedIn/email-only contact into a phone call attempt this week' },
+  { section: 3, action: 'Set meeting target', text: 'Set a monthly target for face-to-face meetings booked' },
+  { section: 4, action: 'Update file weekly', text: "Every Friday: update one-to-one file statuses from the week's activity" },
+  { section: 4, action: 'Log weekly activity', text: 'Every Friday: log # of calls made, meetings held, new opportunities added' },
+  { section: 4, action: 'Review monthly trend', text: 'Monthly: compare pipeline growth vs. prior month, note trend for your own check-in with Yannick' },
 ];
 
 const TARGET_CO_SEED = [
@@ -794,7 +801,7 @@ function seedDefaults() {
   let changed = false;
   if (!state.completedLog) { state.completedLog = []; changed = true; }
   if (!state.roadmap) { state.roadmap = ROADMAP_SEED.map(x => ({ id: uid(), done: false, ...x })); changed = true; }
-  if (!state.workRoadmap) { state.workRoadmap = WORK_ROADMAP_SEED.map(x => ({ id: uid(), done: false, ...x })); changed = true; }
+  if (!state.workRoadmap) { state.workRoadmap = WORK_ROADMAP_SEED.map(x => ({ id: uid(), done: false, status: 'Not Started', notes: '', ...x })); changed = true; }
   if (!state.targetCos) { state.targetCos = TARGET_CO_SEED.map(x => ({ id: uid(), applied: false, ...x })); changed = true; }
   if (!state.tracker) { state.tracker = []; changed = true; }
   if (state.tracker.length === 0) { state.tracker = TRACKER_SEED.map(x => ({ id: uid(), ...x })); changed = true; }
@@ -1112,45 +1119,89 @@ function renderRoadmap() {
 }
 function toggleRoadmap(id) { const it = state.roadmap.find(x => x.id === id); if (it) { it.done = !it.done; logCompletion(it.id, 'roadmap', 'JobSearch', it.text, it.done); save(); renderRoadmap(); renderRollup(); } }
 
+const WORK_STATUS_OPTIONS = ['Not Started', 'In Progress', 'Blocked', 'Done'];
+function workItemStatus(item) { return item.status || (item.done ? 'Done' : 'Not Started'); }
+
 function renderWorkRoadmap() {
-  const container = document.getElementById('workRoadmapList');
-  container.innerHTML = '';
+  const body = document.getElementById('workRoadmapBody');
+  body.innerHTML = '';
   let lastSection = null;
   let idx = 0;
   state.workRoadmap.forEach(item => {
     const meta = WORK_PRIORITY_SECTIONS.find(s => s.id === item.section);
     if (item.section !== lastSection) {
       idx = 0;
-      const h = document.createElement('div');
-      h.className = 'wr-section wr-section-' + meta.color;
-      h.innerHTML = `<div class="wr-section-title">${escapeHtml(meta.title)}</div><div class="wr-section-sub">${escapeHtml(meta.sub)}</div>`;
-      container.appendChild(h);
+      const trh = document.createElement('tr');
+      const tdh = document.createElement('td');
+      tdh.colSpan = 5;
+      tdh.className = 'wr-section-cell wr-section-' + meta.color;
+      tdh.innerHTML = `<div class="wr-section-title">${escapeHtml(meta.title)}</div><div class="wr-section-sub">${escapeHtml(meta.sub)}</div>`;
+      trh.appendChild(tdh);
+      body.appendChild(trh);
       lastSection = item.section;
     }
     idx++;
-    const row = document.createElement('div');
-    row.className = 'rm-item' + (item.done ? ' done' : '');
-    row.innerHTML = `
-      <input type="checkbox" ${item.done ? 'checked' : ''} onchange="toggleWorkRoadmap('${item.id}')">
-      <span class="wr-num wr-num-${meta.color}">${idx}</span>
-      <div class="rm-body">
-        <div class="rm-title-row">
-          <span class="rm-title">${escapeHtml(item.text)}</span>
-        </div>
-      </div>`;
-    container.appendChild(row);
+    const status = workItemStatus(item);
+    const tr = document.createElement('tr');
+    tr.className = 'wr-row' + (status === 'Done' ? ' done' : '');
+
+    const tdWp = document.createElement('td');
+    const wpBadge = document.createElement('span');
+    wpBadge.className = 'wr-num wr-num-' + meta.color;
+    wpBadge.textContent = 'WP' + meta.id + '.' + idx;
+    tdWp.appendChild(wpBadge);
+
+    const tdAction = document.createElement('td');
+    tdAction.className = 'wr-action';
+    tdAction.textContent = item.action || item.text;
+
+    const tdDesc = document.createElement('td');
+    tdDesc.className = 'wr-desc-cell';
+    tdDesc.textContent = item.text || '';
+
+    const tdStatus = document.createElement('td');
+    const sel = document.createElement('select');
+    WORK_STATUS_OPTIONS.forEach(s => {
+      const opt = document.createElement('option'); opt.value = s; opt.textContent = s;
+      if (status === s) opt.selected = true;
+      sel.appendChild(opt);
+    });
+    sel.addEventListener('change', () => updateWorkRoadmapStatus(item.id, sel.value));
+    tdStatus.appendChild(sel);
+
+    const tdNotes = document.createElement('td');
+    const inNotes = document.createElement('input');
+    inNotes.type = 'text'; inNotes.value = item.notes || ''; inNotes.placeholder = 'Notes…';
+    inNotes.addEventListener('change', () => updateWorkRoadmapNotes(item.id, inNotes.value));
+    tdNotes.appendChild(inNotes);
+
+    tr.appendChild(tdWp); tr.appendChild(tdAction); tr.appendChild(tdDesc); tr.appendChild(tdStatus); tr.appendChild(tdNotes);
+    body.appendChild(tr);
   });
-  const done = state.workRoadmap.filter(x => x.done).length;
+  const done = state.workRoadmap.filter(x => workItemStatus(x) === 'Done').length;
   const total = state.workRoadmap.length;
   document.getElementById('workRoadmapCount').textContent = done + ' / ' + total + ' complete';
   const pct = total ? Math.round(done/total*100) : 0;
-  document.getElementById('workRoadmapBar').style.width = pct + '%';
   document.getElementById('wrPct').textContent = pct + '%';
   document.getElementById('wrRing').style.background = `conic-gradient(var(--dark) ${pct}%, #eef1ef 0)`;
   const statEl = document.getElementById('wrStatValue');
   if (statEl) statEl.textContent = done + '/' + total;
 }
-function toggleWorkRoadmap(id) { const it = state.workRoadmap.find(x => x.id === id); if (it) { it.done = !it.done; logCompletion(it.id, 'workRoadmap', 'Work', it.text, it.done); save(); renderWorkRoadmap(); renderRollup(); renderWeeklyRecap(); } }
+function updateWorkRoadmapStatus(id, status) {
+  const it = state.workRoadmap.find(x => x.id === id);
+  if (!it) return;
+  it.status = status;
+  const wasDone = it.done;
+  it.done = status === 'Done';
+  if (it.done !== wasDone) logCompletion(it.id, 'workRoadmap', 'Work', it.action || it.text, it.done);
+  save(); renderWorkRoadmap(); renderRollup(); renderWeeklyRecap();
+}
+function updateWorkRoadmapNotes(id, notes) {
+  const it = state.workRoadmap.find(x => x.id === id);
+  if (!it) return;
+  it.notes = notes;
+  save();
+}
 
 function renderTargets() {
   const now = new Date();
