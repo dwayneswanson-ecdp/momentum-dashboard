@@ -207,6 +207,7 @@
 
   /* Roadmap */
   .rm-scroll { max-height: 460px; overflow-y: auto; margin-top: 8px; padding-right: 6px; }
+  .rm-list { margin-top: 8px; }
   .phase-title { font-weight: 800; font-size: 10.5px; text-transform: uppercase; letter-spacing: .04em; color: var(--accent-dark); margin: 16px 0 6px; }
   .phase-title:first-child { margin-top: 2px; }
   .rm-item { display: flex; gap: 10px; align-items: flex-start; padding: 8px 2px; border-bottom: 1px solid var(--border); }
@@ -247,6 +248,9 @@
   .cheat-quote { background: var(--accent-light); border-radius: 10px; padding: 10px 12px; font-size: 12px; margin-bottom: 8px; color: var(--text); }
   .cheat-list { margin: 0; padding-left: 18px; font-size: 12px; }
   .cheat-list li { margin-bottom: 7px; }
+
+  /* Uniform typography: everything renders at 12px Avenir */
+  * { font-size: 12px !important; font-family: "Avenir", "Avenir Next", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important; }
 </style>
 </head>
 <body>
@@ -279,7 +283,7 @@
           <div class="quote-banner"><span class="txt">Small steps, right choices, big momentum.</span></div>
         </div>
         <div class="actions">
-          <button class="btn-ghost" onclick="switchView('work'); setTimeout(()=>document.getElementById('milestoneInput').focus(),60);">+ Work To-do</button>
+          <button class="btn-ghost" onclick="switchView('work')">+ Work</button>
         </div>
       </div>
 
@@ -296,8 +300,8 @@
         </div>
         <div class="stat-card light">
           <div class="icon">📄</div>
-          <div class="value" id="msStatValue">0/0</div>
-          <div class="label">Work to-dos</div>
+          <div class="value" id="wrStatValue">0/0</div>
+          <div class="label">Priorities roadmap</div>
         </div>
         <div class="stat-card light">
           <div class="icon">💼</div>
@@ -346,31 +350,6 @@
       </div>
 
       <div class="grid2b">
-        <div class="panel" id="milestones">
-          <div class="panel-head">
-            <h2>Work To-Dos</h2>
-            <button class="plus-btn" onclick="document.getElementById('milestoneInput').focus()">+</button>
-          </div>
-          <div class="desc">Ongoing work items — add anything, check it off when done.</div>
-          <ul class="task-list" id="milestoneList"></ul>
-          <div class="add-row">
-            <input type="text" id="milestoneInput" placeholder="Add a to-do…">
-            <button onclick="addMilestone()">Add</button>
-          </div>
-        </div>
-
-        <div class="panel ring-wrap">
-          <div class="ring" id="msRing">
-            <div class="ring-inner">
-              <div class="pct" id="msPct">0%</div>
-              <div class="lbl">complete</div>
-            </div>
-          </div>
-          <div class="ring-caption">Work to-dos<br>progress</div>
-        </div>
-      </div>
-
-      <div class="grid2b">
         <div class="panel" id="workRoadmap">
           <div class="panel-head">
             <h2>Priorities Roadmap</h2>
@@ -378,7 +357,7 @@
           </div>
           <div class="desc">France / Belgium / Netherlands push — one-to-one file, Protection Tour, prospecting, and weekly tracking. Check off as you go.</div>
           <div class="bar-outer"><div class="bar-inner" id="workRoadmapBar" style="width:0%"></div></div>
-          <div class="rm-scroll" id="workRoadmapList"></div>
+          <div class="rm-list" id="workRoadmapList"></div>
         </div>
 
         <div class="panel ring-wrap">
@@ -588,7 +567,7 @@
         <div class="rollup-grid">
           <div class="rollup-item"><div class="num" id="rollupCheckins">0 / 7</div><div class="lbl">Check-ins logged</div></div>
           <div class="rollup-item"><div class="num" id="rollupTasks">0</div><div class="lbl">Tasks completed</div></div>
-          <div class="rollup-item"><div class="num" id="rollupMilestones">0</div><div class="lbl">To-dos done</div></div>
+          <div class="rollup-item"><div class="num" id="rollupMilestones">0</div><div class="lbl">Roadmap items done</div></div>
           <div class="rollup-item"><div class="num" id="rollupRoadmap">0</div><div class="lbl">Roadmap steps done</div></div>
           <div class="rollup-item"><div class="num" id="rollupApps">0</div><div class="lbl">Applications sent</div></div>
         </div>
@@ -857,50 +836,6 @@ function renderHeader() {
   document.getElementById('streakCount').textContent = streak;
 }
 
-function renderMilestones() {
-  const ul = document.getElementById('milestoneList');
-  ul.innerHTML = '';
-  if (state.milestones.length === 0) {
-    ul.innerHTML = '<div class="empty-hint">No to-dos yet — add anything you\'re tracking for work.</div>';
-  }
-  state.milestones.forEach(m => {
-    const li = document.createElement('li');
-    if (m.done) li.classList.add('done');
-    li.innerHTML = `<input type="checkbox" ${m.done ? 'checked' : ''} onchange="toggleMilestone('${m.id}')"><span class="txt" contenteditable="true" spellcheck="false" onblur="commitMilestoneEdit(this,'${m.id}')" onkeydown="milestoneEditKeydown(event,'${m.id}')">${escapeHtml(m.text)}</span><button class="del-btn" onclick="removeMilestone('${m.id}')">✕</button>`;
-    ul.appendChild(li);
-  });
-  const done = state.milestones.filter(m => m.done).length;
-  const total = state.milestones.length;
-  document.getElementById('msStatValue').textContent = done + '/' + total;
-  const pct = total ? Math.round(done/total*100) : 0;
-  document.getElementById('msPct').textContent = pct + '%';
-  document.getElementById('msRing').style.background = `conic-gradient(var(--accent) ${pct}%, #eef1ef 0)`;
-}
-function addMilestone() {
-  const input = document.getElementById('milestoneInput');
-  const text = input.value.trim();
-  if (!text) return;
-  state.milestones.push({ id: uid(), text, done: false });
-  input.value = '';
-  save(); renderMilestones();
-}
-function toggleMilestone(id) { const m = state.milestones.find(x => x.id === id); if (m) { m.done = !m.done; logCompletion(m.id, 'milestone', 'Work', m.text, m.done); save(); renderMilestones(); renderRollup(); renderWeeklyRecap(); } }
-function commitMilestoneEdit(el, id) {
-  const m = state.milestones.find(x => x.id === id);
-  if (!m) return;
-  const newText = el.textContent.trim();
-  if (!newText) { el.textContent = m.text; return; }
-  if (newText !== m.text) { m.text = newText; save(); }
-}
-function milestoneEditKeydown(e, id) {
-  if (e.key === 'Enter') { e.preventDefault(); e.target.blur(); }
-  else if (e.key === 'Escape') {
-    const m = state.milestones.find(x => x.id === id);
-    if (m) e.target.textContent = m.text;
-    e.target.blur();
-  }
-}
-function removeMilestone(id) { state.milestones = state.milestones.filter(x => x.id !== id); save(); renderMilestones(); }
 
 // ---------- Today / Tomorrow (split by category: Work / Job Search / Personal) ----------
 function tagClass(type) { return 'tag-' + (type === 'JobSearch' ? 'JobSearch' : (type === 'Personal' ? 'Personal' : 'Work')); }
@@ -1212,6 +1147,8 @@ function renderWorkRoadmap() {
   document.getElementById('workRoadmapBar').style.width = pct + '%';
   document.getElementById('wrPct').textContent = pct + '%';
   document.getElementById('wrRing').style.background = `conic-gradient(var(--dark) ${pct}%, #eef1ef 0)`;
+  const statEl = document.getElementById('wrStatValue');
+  if (statEl) statEl.textContent = done + '/' + total;
 }
 function toggleWorkRoadmap(id) { const it = state.workRoadmap.find(x => x.id === id); if (it) { it.done = !it.done; logCompletion(it.id, 'workRoadmap', 'Work', it.text, it.done); save(); renderWorkRoadmap(); renderRollup(); renderWeeklyRecap(); } }
 
@@ -1300,7 +1237,7 @@ function renderRollup() {
   const inWeek = (dateStr) => dateStr && dateStr >= mondayISO && dateStr <= sundayISO;
   const checkinsThisWeek = state.checkins.filter(c => inWeek(c.date)).length;
   const tasksDone = state.completedLog.filter(l => l.source === 'task' && inWeek(l.date)).length;
-  const milestonesDone = state.completedLog.filter(l => l.source === 'milestone' && inWeek(l.date)).length;
+  const milestonesDone = state.completedLog.filter(l => l.source === 'workRoadmap' && inWeek(l.date)).length;
   const roadmapDone = state.completedLog.filter(l => l.source === 'roadmap' && inWeek(l.date)).length;
   const appsThisWeek = state.tracker.filter(r => inWeek(r.applied)).length;
 
@@ -1347,7 +1284,6 @@ function renderWeeklyRecap() {
 
 function renderAll() {
   renderHeader();
-  renderMilestones();
   renderTaskListsAll();
   renderWorkRoadmap();
   renderTracker();
