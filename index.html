@@ -14,6 +14,8 @@
     --amber-light: #fef3c7;
     --red: #dc2626;
     --red-light: #fee2e2;
+    --orange: #ea580c;
+    --orange-light: #ffedd5;
     --blue: #2563eb;
     --blue-light: #dbeafe;
     --purple: #7c3aed;
@@ -238,7 +240,8 @@
   .wr-num-amber { background: var(--amber-light); color: var(--amber); }
   .wr-num-work { background: var(--accent-light); color: var(--accent-dark); }
   .wr-action, .wr-desc-cell { font-weight: 400; }
-  .wr-row-in-progress { background: var(--amber-light); }
+  .wr-row-in-progress { background: var(--orange-light); }
+  .wr-row-in-progress .wr-action, .wr-row-in-progress .wr-desc-cell { color: var(--orange); }
   .wr-row-blocked { background: var(--red-light); }
   .wr-row-blocked .wr-action, .wr-row-blocked .wr-desc-cell { color: var(--red); }
   .wr-row-done { background: var(--accent-light); }
