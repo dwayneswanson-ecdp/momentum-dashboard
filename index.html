@@ -108,6 +108,7 @@
   .task-list li.done span.txt { text-decoration: line-through; color: var(--muted); }
   .task-list input[type=checkbox] { width: 16px; height: 16px; accent-color: var(--accent); flex-shrink: 0; }
   .task-list span.txt { flex: 1; word-break: break-word; cursor: text; border-radius: 4px; padding: 1px 4px; margin: -1px -4px; }
+  .task-list li .recap-date { margin-left: auto; font-size: 11px; color: var(--muted); flex-shrink: 0; }
   .task-list span.txt:hover { background: var(--bg); }
   .task-list span.txt:focus { outline: 2px solid var(--accent); background: #fff; }
   .del-btn { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 14px; padding: 2px 5px; border-radius: 6px; }
@@ -238,6 +239,7 @@
       <a data-view="overview" class="active">📊&nbsp; Overview</a>
       <a data-view="work">💼&nbsp; Work</a>
       <a data-view="jobsearch">🎯&nbsp; Job Search</a>
+      <a data-view="personal">🌿&nbsp; Personal</a>
       <a data-view="checkin">💬&nbsp; Check-in</a>
     </nav>
     <div class="sidebar-footer">
@@ -259,7 +261,6 @@
         </div>
         <div class="actions">
           <button class="btn-ghost" onclick="switchView('work'); setTimeout(()=>document.getElementById('milestoneInput').focus(),60);">+ Work To-do</button>
-          <button class="btn-primary" onclick="document.getElementById('todayInput').focus();">+ Add Task</button>
         </div>
       </div>
 
@@ -286,37 +287,10 @@
         </div>
       </div>
 
-      <div class="grid-today">
-        <div class="panel panel-lg" id="today">
-          <div class="panel-head"><h2>Today</h2></div>
-          <div class="desc" id="todayDesc"></div>
-          <ul class="task-list big" id="todayList"></ul>
-          <div class="add-row">
-            <select id="todayType" class="type-select">
-              <option value="Work">Work</option>
-              <option value="JobSearch">Job Search</option>
-              <option value="Personal">Personal</option>
-            </select>
-            <input type="text" id="todayInput" placeholder="Add a task…">
-            <button onclick="addTask('today')">Add</button>
-          </div>
-          <div style="text-align:right; margin-top:8px;"><button class="del-btn" style="font-size:12px;" onclick="clearCompleted('today')">Clear done</button></div>
-        </div>
-
-        <div class="panel panel-lg" id="tomorrow">
-          <div class="panel-head"><h2>Tomorrow</h2></div>
-          <div class="desc">Load it tonight.</div>
-          <ul class="task-list big" id="tomorrowList"></ul>
-          <div class="add-row">
-            <select id="tomorrowType" class="type-select">
-              <option value="Work">Work</option>
-              <option value="JobSearch">Job Search</option>
-              <option value="Personal">Personal</option>
-            </select>
-            <input type="text" id="tomorrowInput" placeholder="Add a task…">
-            <button onclick="addTask('tomorrow')">Add</button>
-          </div>
-        </div>
+      <div class="panel full-row" id="weeklyRecap">
+        <div class="panel-head"><h2>Last 7 Days — 1:1 Talking Points</h2></div>
+        <div class="desc" id="weeklyRecapRange"></div>
+        <ul class="task-list" id="weeklyRecapList"></ul>
       </div>
 
       <div style="text-align:center; margin-bottom:14px;">
@@ -329,6 +303,27 @@
       <div class="view-head">
         <h1>Work</h1>
         <div class="sub">Your ongoing work to-dos + 4-day work week.</div>
+      </div>
+
+      <div class="grid-today">
+        <div class="panel panel-lg" id="workToday">
+          <div class="panel-head"><h2>Today</h2></div>
+          <ul class="task-list big" id="workTodayList"></ul>
+          <div class="add-row">
+            <input type="text" id="workTodayInput" placeholder="Add a work task…">
+            <button onclick="addTypedTask('today','Work','work')">Add</button>
+          </div>
+          <div style="text-align:right; margin-top:8px;"><button class="del-btn" style="font-size:12px;" onclick="clearCompletedTyped('today','Work')">Clear done</button></div>
+        </div>
+
+        <div class="panel panel-lg" id="workTomorrow">
+          <div class="panel-head"><h2>Tomorrow</h2></div>
+          <ul class="task-list big" id="workTomorrowList"></ul>
+          <div class="add-row">
+            <input type="text" id="workTomorrowInput" placeholder="Add a work task…">
+            <button onclick="addTypedTask('tomorrow','Work','work')">Add</button>
+          </div>
+        </div>
       </div>
 
       <div class="grid2b">
@@ -376,6 +371,27 @@
       <div class="view-head">
         <h1>Job Search</h1>
         <div class="sub">Sales → SaaS/Tech · Target €60-70K base + bonus · English-first roles · Paris</div>
+      </div>
+
+      <div class="grid-today">
+        <div class="panel panel-lg" id="jobToday">
+          <div class="panel-head"><h2>Today</h2></div>
+          <ul class="task-list big" id="jobTodayList"></ul>
+          <div class="add-row">
+            <input type="text" id="jobTodayInput" placeholder="Add a job search task…">
+            <button onclick="addTypedTask('today','JobSearch','job')">Add</button>
+          </div>
+          <div style="text-align:right; margin-top:8px;"><button class="del-btn" style="font-size:12px;" onclick="clearCompletedTyped('today','JobSearch')">Clear done</button></div>
+        </div>
+
+        <div class="panel panel-lg" id="jobTomorrow">
+          <div class="panel-head"><h2>Tomorrow</h2></div>
+          <ul class="task-list big" id="jobTomorrowList"></ul>
+          <div class="add-row">
+            <input type="text" id="jobTomorrowInput" placeholder="Add a job search task…">
+            <button onclick="addTypedTask('tomorrow','JobSearch','job')">Add</button>
+          </div>
+        </div>
       </div>
 
       <div class="panel full-row" id="targetsPanel">
@@ -487,6 +503,35 @@
           </div>
         </div>
       </details>
+    </section>
+
+    <!-- ============ PERSONAL ============ -->
+    <section class="view" id="view-personal">
+      <div class="view-head">
+        <h1>Personal</h1>
+        <div class="sub">Keep life stuff separate from work and the job search.</div>
+      </div>
+
+      <div class="grid-today">
+        <div class="panel panel-lg" id="personalToday">
+          <div class="panel-head"><h2>Today</h2></div>
+          <ul class="task-list big" id="personalTodayList"></ul>
+          <div class="add-row">
+            <input type="text" id="personalTodayInput" placeholder="Add a personal task…">
+            <button onclick="addTypedTask('today','Personal','personal')">Add</button>
+          </div>
+          <div style="text-align:right; margin-top:8px;"><button class="del-btn" style="font-size:12px;" onclick="clearCompletedTyped('today','Personal')">Clear done</button></div>
+        </div>
+
+        <div class="panel panel-lg" id="personalTomorrow">
+          <div class="panel-head"><h2>Tomorrow</h2></div>
+          <ul class="task-list big" id="personalTomorrowList"></ul>
+          <div class="add-row">
+            <input type="text" id="personalTomorrowInput" placeholder="Add a personal task…">
+            <button onclick="addTypedTask('tomorrow','Personal','personal')">Add</button>
+          </div>
+        </div>
+      </div>
     </section>
 
     <!-- ============ CHECK-IN ============ -->
@@ -726,9 +771,6 @@ function renderHeader() {
   document.getElementById('dateLine').textContent = now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
   const badge = document.getElementById('todayBadge');
   badge.textContent = isFriday ? 'Job Search Friday' : 'Workday';
-  document.getElementById('todayDesc').textContent = isFriday
-    ? 'Full day for the search.'
-    : 'First-thing block, then reporting project + top 3.';
 
   const dayNum = Math.max(1, Math.floor((new Date(now.getFullYear(),now.getMonth(),now.getDate()) - START_DATE) / 86400000) + 1);
   document.getElementById('dayCount').textContent = dayNum;
@@ -771,7 +813,7 @@ function addMilestone() {
   input.value = '';
   save(); renderMilestones();
 }
-function toggleMilestone(id) { const m = state.milestones.find(x => x.id === id); if (m) { m.done = !m.done; logCompletion(m.id, 'milestone', 'Work', m.text, m.done); save(); renderMilestones(); renderRollup(); } }
+function toggleMilestone(id) { const m = state.milestones.find(x => x.id === id); if (m) { m.done = !m.done; logCompletion(m.id, 'milestone', 'Work', m.text, m.done); save(); renderMilestones(); renderRollup(); renderWeeklyRecap(); } }
 function commitMilestoneEdit(el, id) {
   const m = state.milestones.find(x => x.id === id);
   if (!m) return;
@@ -789,31 +831,43 @@ function milestoneEditKeydown(e, id) {
 }
 function removeMilestone(id) { state.milestones = state.milestones.filter(x => x.id !== id); save(); renderMilestones(); }
 
-// ---------- Today / Tomorrow (tagged Work / Job Search / Personal) ----------
+// ---------- Today / Tomorrow (split by category: Work / Job Search / Personal) ----------
 function tagClass(type) { return 'tag-' + (type === 'JobSearch' ? 'JobSearch' : (type === 'Personal' ? 'Personal' : 'Work')); }
 function tagLabel(type) { return type === 'JobSearch' ? 'Job Search' : (type === 'Personal' ? 'Personal' : 'Work'); }
 
-function renderTaskList(key) {
-  const ul = document.getElementById(key + 'List');
-  ul.innerHTML = '';
-  const list = state[key];
+const TASK_CATEGORIES = [
+  { type: 'Work', prefix: 'work' },
+  { type: 'JobSearch', prefix: 'job' },
+  { type: 'Personal', prefix: 'personal' },
+];
+function listElId(prefix, key) { return prefix + (key === 'today' ? 'Today' : 'Tomorrow') + 'List'; }
+function inputElId(prefix, key) { return prefix + (key === 'today' ? 'Today' : 'Tomorrow') + 'Input'; }
+
+function renderTaskListFiltered(key, type, prefix) {
+  const ul = document.getElementById(listElId(prefix, key));
+  if (!ul) return;
+  const list = state[key].filter(t => (t.type || 'Work') === type);
   if (list.length === 0) { ul.innerHTML = `<div class="empty-hint">Nothing here yet.</div>`; return; }
+  ul.innerHTML = '';
   list.forEach(t => {
     const li = document.createElement('li');
     if (t.done) li.classList.add('done');
-    li.innerHTML = `<input type="checkbox" ${t.done ? 'checked' : ''} onchange="toggleTask('${key}','${t.id}')"><span class="tag-badge ${tagClass(t.type)}">${tagLabel(t.type)}</span><span class="txt" contenteditable="true" spellcheck="false" onblur="commitTaskEdit(this,'${key}','${t.id}')" onkeydown="taskEditKeydown(event,'${key}','${t.id}')">${escapeHtml(t.text)}</span><button class="del-btn" onclick="removeTask('${key}','${t.id}')">✕</button>`;
+    li.innerHTML = `<input type="checkbox" ${t.done ? 'checked' : ''} onchange="toggleTask('${key}','${t.id}')"><span class="txt" contenteditable="true" spellcheck="false" onblur="commitTaskEdit(this,'${key}','${t.id}')" onkeydown="taskEditKeydown(event,'${key}','${t.id}')">${escapeHtml(t.text)}</span><button class="del-btn" onclick="removeTask('${key}','${t.id}')">✕</button>`;
     ul.appendChild(li);
   });
 }
-function addTask(key) {
-  const input = document.getElementById(key + 'Input');
-  const typeSel = document.getElementById(key + 'Type');
+function renderTaskListsAll() {
+  ['today', 'tomorrow'].forEach(key => {
+    TASK_CATEGORIES.forEach(c => renderTaskListFiltered(key, c.type, c.prefix));
+  });
+}
+function addTypedTask(key, type, prefix) {
+  const input = document.getElementById(inputElId(prefix, key));
   const text = input.value.trim();
   if (!text) return;
-  const type = typeSel ? typeSel.value : 'Work';
   state[key].push({ id: uid(), text, done: false, type });
   input.value = '';
-  save(); renderTaskList(key);
+  save(); renderTaskListsAll();
   if (key === 'today') renderCarryForward();
 }
 function toggleTask(key, id) {
@@ -821,15 +875,16 @@ function toggleTask(key, id) {
   if (!t) return;
   t.done = !t.done;
   if (key === 'today') logCompletion(t.id, 'task', t.type, t.text, t.done);
-  save(); renderTaskList(key);
+  save(); renderTaskListsAll();
   if (key === 'today') { renderRollup(); renderCarryForward(); }
+  if (t.type === 'Work') renderWeeklyRecap();
 }
 function commitTaskEdit(el, key, id) {
   const t = state[key].find(x => x.id === id);
   if (!t) return;
   const newText = el.textContent.trim();
   if (!newText) { el.textContent = t.text; return; }
-  if (newText !== t.text) { t.text = newText; save(); }
+  if (newText !== t.text) { t.text = newText; save(); if (t.type === 'Work') renderWeeklyRecap(); }
 }
 function taskEditKeydown(e, key, id) {
   if (e.key === 'Enter') { e.preventDefault(); e.target.blur(); }
@@ -839,19 +894,19 @@ function taskEditKeydown(e, key, id) {
     e.target.blur();
   }
 }
-function removeTask(key, id) { state[key] = state[key].filter(x => x.id !== id); save(); renderTaskList(key); if (key === 'today') renderCarryForward(); }
-function clearCompleted(key) { state[key] = state[key].filter(t => !t.done); save(); renderTaskList(key); if (key === 'today') renderCarryForward(); }
+function removeTask(key, id) { state[key] = state[key].filter(x => x.id !== id); save(); renderTaskListsAll(); if (key === 'today') renderCarryForward(); }
+function clearCompletedTyped(key, type) { state[key] = state[key].filter(t => !(t.done && (t.type || 'Work') === type)); save(); renderTaskListsAll(); if (key === 'today') renderCarryForward(); }
 function rollDay() {
   state.today = state.today.filter(t => !t.done).concat(state.tomorrow);
   state.tomorrow = [];
-  save(); renderTaskList('today'); renderTaskList('tomorrow'); renderCarryForward();
+  save(); renderTaskListsAll(); renderCarryForward();
 }
 function carryToTomorrow(id) {
   const idx = state.today.findIndex(t => t.id === id);
   if (idx === -1) return;
   const [task] = state.today.splice(idx, 1);
   state.tomorrow.push(task);
-  save(); renderTaskList('today'); renderTaskList('tomorrow'); renderCarryForward();
+  save(); renderTaskListsAll(); renderCarryForward();
 }
 function renderCarryForward() {
   const container = document.getElementById('carryForwardList');
@@ -879,8 +934,11 @@ function renderCarryForward() {
     container.appendChild(row);
   });
 }
-['today','tomorrow'].forEach(key => {
-  document.getElementById(key + 'Input').addEventListener('keydown', e => { if (e.key === 'Enter') addTask(key); });
+TASK_CATEGORIES.forEach(c => {
+  ['today', 'tomorrow'].forEach(key => {
+    const el = document.getElementById(inputElId(c.prefix, key));
+    if (el) el.addEventListener('keydown', e => { if (e.key === 'Enter') addTypedTask(key, c.type, c.prefix); });
+  });
 });
 
 // ---------- Job Search Tracker (DOM-built rows so free-text notes/next-step can't break markup) ----------
@@ -1145,11 +1203,43 @@ function renderRollup() {
   set('rollupApps', appsThisWeek);
 }
 
+function renderWeeklyRecap() {
+  const list = document.getElementById('weeklyRecapList');
+  if (!list) return;
+  const cutoff = new Date(); cutoff.setDate(cutoff.getDate() - 6); cutoff.setHours(0,0,0,0);
+  const cutoffISO = cutoff.getFullYear() + '-' + String(cutoff.getMonth()+1).padStart(2,'0') + '-' + String(cutoff.getDate()).padStart(2,'0');
+  const rangeEl = document.getElementById('weeklyRecapRange');
+  if (rangeEl) rangeEl.textContent = fmtShort(cutoff) + ' – ' + fmtShort(new Date()) + ' · work items completed';
+
+  const items = state.completedLog
+    .filter(l => l.date >= cutoffISO && (l.source === 'milestone' || (l.source === 'task' && l.type === 'Work')))
+    .sort((a, b) => b.date.localeCompare(a.date));
+
+  if (items.length === 0) {
+    list.innerHTML = '<div class="empty-hint">Nothing completed in the last 7 days yet — check off Work tasks or Work To-Dos to build your talking points.</div>';
+    return;
+  }
+  list.innerHTML = '';
+  items.forEach(it => {
+    const li = document.createElement('li');
+    const badge = document.createElement('span');
+    badge.className = 'tag-badge tag-Work';
+    badge.textContent = it.source === 'milestone' ? 'To-Do' : 'Task';
+    const txt = document.createElement('span');
+    txt.className = 'txt';
+    txt.textContent = it.text;
+    const date = document.createElement('span');
+    date.className = 'recap-date';
+    date.textContent = fmtShort(new Date(it.date + 'T00:00:00'));
+    li.appendChild(badge); li.appendChild(txt); li.appendChild(date);
+    list.appendChild(li);
+  });
+}
+
 function renderAll() {
   renderHeader();
   renderMilestones();
-  renderTaskList('today');
-  renderTaskList('tomorrow');
+  renderTaskListsAll();
   renderTracker();
   renderTargetCos();
   renderRoadmap();
@@ -1157,6 +1247,7 @@ function renderAll() {
   renderCheckins();
   renderRollup();
   renderCarryForward();
+  renderWeeklyRecap();
 }
 renderAll();
 pullBackupIfNewer();
