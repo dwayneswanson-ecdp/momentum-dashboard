@@ -107,7 +107,9 @@
   .task-list li:last-child { border-bottom: none; }
   .task-list li.done span.txt { text-decoration: line-through; color: var(--muted); }
   .task-list input[type=checkbox] { width: 16px; height: 16px; accent-color: var(--accent); flex-shrink: 0; }
-  .task-list span.txt { flex: 1; word-break: break-word; }
+  .task-list span.txt { flex: 1; word-break: break-word; cursor: text; border-radius: 4px; padding: 1px 4px; margin: -1px -4px; }
+  .task-list span.txt:hover { background: var(--bg); }
+  .task-list span.txt:focus { outline: 2px solid var(--accent); background: #fff; }
   .del-btn { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 14px; padding: 2px 5px; border-radius: 6px; }
   .del-btn:hover { background: #fde8e8; color: var(--red); }
   /* Big today/tomorrow variant */
@@ -751,7 +753,7 @@ function renderMilestones() {
   state.milestones.forEach(m => {
     const li = document.createElement('li');
     if (m.done) li.classList.add('done');
-    li.innerHTML = `<input type="checkbox" ${m.done ? 'checked' : ''} onchange="toggleMilestone('${m.id}')"><span class="txt">${escapeHtml(m.text)}</span><button class="del-btn" onclick="removeMilestone('${m.id}')">✕</button>`;
+    li.innerHTML = `<input type="checkbox" ${m.done ? 'checked' : ''} onchange="toggleMilestone('${m.id}')"><span class="txt" contenteditable="true" spellcheck="false" onblur="commitMilestoneEdit(this,'${m.id}')" onkeydown="milestoneEditKeydown(event,'${m.id}')">${escapeHtml(m.text)}</span><button class="del-btn" onclick="removeMilestone('${m.id}')">✕</button>`;
     ul.appendChild(li);
   });
   const done = state.milestones.filter(m => m.done).length;
@@ -770,6 +772,21 @@ function addMilestone() {
   save(); renderMilestones();
 }
 function toggleMilestone(id) { const m = state.milestones.find(x => x.id === id); if (m) { m.done = !m.done; logCompletion(m.id, 'milestone', 'Work', m.text, m.done); save(); renderMilestones(); renderRollup(); } }
+function commitMilestoneEdit(el, id) {
+  const m = state.milestones.find(x => x.id === id);
+  if (!m) return;
+  const newText = el.textContent.trim();
+  if (!newText) { el.textContent = m.text; return; }
+  if (newText !== m.text) { m.text = newText; save(); }
+}
+function milestoneEditKeydown(e, id) {
+  if (e.key === 'Enter') { e.preventDefault(); e.target.blur(); }
+  else if (e.key === 'Escape') {
+    const m = state.milestones.find(x => x.id === id);
+    if (m) e.target.textContent = m.text;
+    e.target.blur();
+  }
+}
 function removeMilestone(id) { state.milestones = state.milestones.filter(x => x.id !== id); save(); renderMilestones(); }
 
 // ---------- Today / Tomorrow (tagged Work / Job Search / Personal) ----------
@@ -784,7 +801,7 @@ function renderTaskList(key) {
   list.forEach(t => {
     const li = document.createElement('li');
     if (t.done) li.classList.add('done');
-    li.innerHTML = `<input type="checkbox" ${t.done ? 'checked' : ''} onchange="toggleTask('${key}','${t.id}')"><span class="tag-badge ${tagClass(t.type)}">${tagLabel(t.type)}</span><span class="txt">${escapeHtml(t.text)}</span><button class="del-btn" onclick="removeTask('${key}','${t.id}')">✕</button>`;
+    li.innerHTML = `<input type="checkbox" ${t.done ? 'checked' : ''} onchange="toggleTask('${key}','${t.id}')"><span class="tag-badge ${tagClass(t.type)}">${tagLabel(t.type)}</span><span class="txt" contenteditable="true" spellcheck="false" onblur="commitTaskEdit(this,'${key}','${t.id}')" onkeydown="taskEditKeydown(event,'${key}','${t.id}')">${escapeHtml(t.text)}</span><button class="del-btn" onclick="removeTask('${key}','${t.id}')">✕</button>`;
     ul.appendChild(li);
   });
 }
@@ -806,6 +823,21 @@ function toggleTask(key, id) {
   if (key === 'today') logCompletion(t.id, 'task', t.type, t.text, t.done);
   save(); renderTaskList(key);
   if (key === 'today') { renderRollup(); renderCarryForward(); }
+}
+function commitTaskEdit(el, key, id) {
+  const t = state[key].find(x => x.id === id);
+  if (!t) return;
+  const newText = el.textContent.trim();
+  if (!newText) { el.textContent = t.text; return; }
+  if (newText !== t.text) { t.text = newText; save(); }
+}
+function taskEditKeydown(e, key, id) {
+  if (e.key === 'Enter') { e.preventDefault(); e.target.blur(); }
+  else if (e.key === 'Escape') {
+    const t = state[key].find(x => x.id === id);
+    if (t) e.target.textContent = t.text;
+    e.target.blur();
+  }
 }
 function removeTask(key, id) { state[key] = state[key].filter(x => x.id !== id); save(); renderTaskList(key); if (key === 'today') renderCarryForward(); }
 function clearCompleted(key) { state[key] = state[key].filter(t => !t.done); save(); renderTaskList(key); if (key === 'today') renderCarryForward(); }
