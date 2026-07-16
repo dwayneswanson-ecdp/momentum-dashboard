@@ -370,14 +370,26 @@
         </div>
       </div>
 
-      <div class="panel full-row" id="workRoadmap">
-        <div class="panel-head">
-          <h2>Priorities Roadmap</h2>
-          <span class="tally" id="workRoadmapCount">0 / 0 complete</span>
+      <div class="grid2b">
+        <div class="panel" id="workRoadmap">
+          <div class="panel-head">
+            <h2>Priorities Roadmap</h2>
+            <span class="tally" id="workRoadmapCount">0 / 0 complete</span>
+          </div>
+          <div class="desc">France / Belgium / Netherlands push — one-to-one file, Protection Tour, prospecting, and weekly tracking. Check off as you go.</div>
+          <div class="bar-outer"><div class="bar-inner" id="workRoadmapBar" style="width:0%"></div></div>
+          <div class="rm-scroll" id="workRoadmapList"></div>
         </div>
-        <div class="desc">France / Belgium / Netherlands push — one-to-one file, Protection Tour, prospecting, and weekly tracking. Check off as you go.</div>
-        <div class="bar-outer"><div class="bar-inner" id="workRoadmapBar" style="width:0%"></div></div>
-        <div class="rm-scroll" id="workRoadmapList"></div>
+
+        <div class="panel ring-wrap">
+          <div class="ring" id="wrRing">
+            <div class="ring-inner">
+              <div class="pct" id="wrPct">0%</div>
+              <div class="lbl">complete</div>
+            </div>
+          </div>
+          <div class="ring-caption">Priorities roadmap<br>progress</div>
+        </div>
       </div>
 
       <details class="panel" id="reference">
@@ -1196,7 +1208,10 @@ function renderWorkRoadmap() {
   const done = state.workRoadmap.filter(x => x.done).length;
   const total = state.workRoadmap.length;
   document.getElementById('workRoadmapCount').textContent = done + ' / ' + total + ' complete';
-  document.getElementById('workRoadmapBar').style.width = (total ? done/total*100 : 0) + '%';
+  const pct = total ? Math.round(done/total*100) : 0;
+  document.getElementById('workRoadmapBar').style.width = pct + '%';
+  document.getElementById('wrPct').textContent = pct + '%';
+  document.getElementById('wrRing').style.background = `conic-gradient(var(--dark) ${pct}%, #eef1ef 0)`;
 }
 function toggleWorkRoadmap(id) { const it = state.workRoadmap.find(x => x.id === id); if (it) { it.done = !it.done; logCompletion(it.id, 'workRoadmap', 'Work', it.text, it.done); save(); renderWorkRoadmap(); renderRollup(); renderWeeklyRecap(); } }
 
