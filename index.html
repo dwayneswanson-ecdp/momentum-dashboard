@@ -43,7 +43,6 @@
     padding: 22px 16px; display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; overflow-y: auto;
   }
   .brand { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 16px; margin-bottom: 22px; padding: 0 6px; }
-  .brand .dot { width: 26px; height: 26px; border-radius: 8px; background: var(--dark); display: flex; align-items: center; justify-content: center; font-size: 13px; }
   nav.navlist { display: flex; flex-direction: column; gap: 3px; }
   nav.navlist a {
     display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; color: var(--muted);
@@ -271,8 +270,7 @@
   /* Brand hierarchy: deliberate exceptions on top of the 12px base — page titles, panel headers, the logo mark, and key numbers get real weight so Momentum reads as a designed product, not a flat document. Everything else (tables, lists, form fields) stays uniform. */
   h1 { font-size: 22px !important; font-weight: 800 !important; letter-spacing: -.01em; }
   h2 { font-size: 15px !important; font-weight: 700 !important; }
-  .brand { font-size: 17px !important; font-weight: 800 !important; letter-spacing: -.01em; }
-  .brand .dot { font-size: 13px !important; color: #fff; }
+  .brand { font-size: 17px !important; font-weight: 600 !important; letter-spacing: .16em !important; text-transform: uppercase; }
   .stat-card .value { font-size: 22px !important; font-weight: 800 !important; }
   .ring-inner .pct { font-size: 18px !important; font-weight: 800 !important; }
   nav.navlist a { font-size: 13px !important; }
@@ -284,7 +282,7 @@
 <div class="app">
 
   <aside class="sidebar">
-    <div class="brand"><span class="dot">M</span>Momentum</div>
+    <div class="brand">Momentum</div>
     <nav class="navlist">
       <a data-view="overview" class="active">📊&nbsp; Overview</a>
       <a data-view="work">💼&nbsp; Work</a>
