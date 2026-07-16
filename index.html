@@ -265,15 +265,26 @@
   .cheat-list { margin: 0; padding-left: 18px; font-size: 12px; }
   .cheat-list li { margin-bottom: 7px; }
 
-  /* Uniform typography: everything renders at 12px Avenir */
+  /* Base typography: everything renders at 12px Avenir by default */
   * { font-size: 12px !important; font-family: "Avenir", "Avenir Next", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important; }
+
+  /* Brand hierarchy: deliberate exceptions on top of the 12px base — page titles, panel headers, the logo mark, and key numbers get real weight so Momentum reads as a designed product, not a flat document. Everything else (tables, lists, form fields) stays uniform. */
+  h1 { font-size: 22px !important; font-weight: 800 !important; letter-spacing: -.01em; }
+  h2 { font-size: 15px !important; font-weight: 700 !important; }
+  .brand { font-size: 17px !important; font-weight: 800 !important; letter-spacing: -.01em; }
+  .brand .dot { font-size: 13px !important; color: #fff; }
+  .stat-card .value { font-size: 22px !important; font-weight: 800 !important; }
+  .ring-inner .pct { font-size: 18px !important; font-weight: 800 !important; }
+  nav.navlist a { font-size: 13px !important; }
+  nav.navlist a.active { font-weight: 700 !important; }
+  .quote-banner .txt { font-size: 13px !important; font-weight: 700 !important; font-style: italic; }
 </style>
 </head>
 <body>
 <div class="app">
 
   <aside class="sidebar">
-    <div class="brand">Momentum</div>
+    <div class="brand"><span class="dot">M</span>Momentum</div>
     <nav class="navlist">
       <a data-view="overview" class="active">📊&nbsp; Overview</a>
       <a data-view="work">💼&nbsp; Work</a>
