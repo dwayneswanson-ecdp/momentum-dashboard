@@ -62,6 +62,16 @@
 
   /* Main */
   .main { flex: 1; padding: 26px 30px 60px; min-width: 0; }
+
+  @media (max-width: 760px) {
+    .app { flex-direction: column; }
+    .sidebar { width: 100%; height: auto; position: static; flex-direction: row; align-items: center; padding: 12px 14px; gap: 14px; overflow-x: auto; }
+    .brand { margin-bottom: 0; flex-shrink: 0; }
+    nav.navlist { flex-direction: row; overflow-x: auto; gap: 4px; flex: 1; }
+    nav.navlist a { white-space: nowrap; padding: 8px 10px; }
+    .sidebar-footer { display: none; }
+    .main { padding: 16px 14px 40px; }
+  }
   .view { display: none; }
   .view.active { display: block; }
   .quote-banner { margin-top: 6px; }
@@ -251,6 +261,35 @@
   .wr-notes:focus { outline: none; border: 1px solid var(--border); background: #fff; }
   .wr-notes:empty:before { content: attr(data-placeholder); color: var(--muted); }
 
+  /* Call Scripts */
+  .cs-lang-toggle { display: flex; gap: 4px; background: var(--bg); border-radius: 8px; padding: 3px; flex-shrink: 0; }
+  .cs-lang-btn { border: none; background: transparent; padding: 6px 14px; border-radius: 6px; font-weight: 700; cursor: pointer; color: var(--muted); }
+  .cs-lang-btn.active { background: var(--card); color: var(--accent-dark); box-shadow: 0 1px 2px rgba(0,0,0,.08); }
+  .cs-search { width: 100%; padding: 11px 14px; border: 1px solid var(--border); border-radius: 10px; margin: 10px 0 14px; }
+  .cs-cat-row, .cs-type-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+  .cs-cat-btn, .cs-type-btn { border: 1px solid var(--border); background: var(--card); padding: 10px 14px; border-radius: 10px; cursor: pointer; font-weight: 600; text-align: left; min-height: 40px; }
+  .cs-cat-btn.active { background: var(--dark); border-color: var(--dark); color: #fff; }
+  .cs-type-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .cs-empty-hint { color: var(--muted); font-style: italic; padding: 6px 2px; }
+  .cs-card { border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 14px; }
+  .cs-card-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+  .cs-card-title { font-weight: 800; }
+  .cs-copy-btn { border: 1px solid var(--border); background: var(--card); padding: 8px 14px; border-radius: 8px; cursor: pointer; font-weight: 700; min-height: 38px; }
+  .cs-copy-btn.copied { background: var(--accent-light); border-color: var(--accent); color: var(--accent-dark); }
+  .cs-script-text { font-size: 16px !important; line-height: 1.6; padding: 4px 2px; }
+  .cs-placeholder { display: inline; background: var(--amber-light); color: var(--amber); border-radius: 4px; padding: 1px 5px; cursor: text; font-weight: 700; }
+  .cs-placeholder:focus { outline: 2px solid var(--accent); background: #fff; }
+  .cs-note { font-size: 13px !important; font-style: italic; color: var(--muted); margin-top: 8px; }
+  .cs-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+  .cs-tag { background: var(--bg); border: 1px solid var(--border); color: var(--muted); padding: 3px 10px; border-radius: 999px; }
+  .cs-followup { margin-top: 12px; }
+  .cs-followup summary { cursor: pointer; font-weight: 700; color: var(--accent-dark); padding: 6px 0; min-height: 30px; }
+  .cs-followup-text { font-size: 15px !important; line-height: 1.5; padding: 8px 10px; background: var(--bg); border-radius: 8px; margin-top: 6px; }
+  .cs-footer-note { margin-top: 14px; padding: 10px 12px; background: var(--amber-light); color: var(--amber); border-radius: 8px; font-weight: 600; }
+  @media (max-width: 600px) {
+    .cs-cat-btn, .cs-type-btn { flex: 1 1 calc(50% - 8px); }
+  }
+
   /* Salary cheat sheet */
   .cheat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
   @media (max-width: 800px) { .cheat-grid { grid-template-columns: 1fr; } }
@@ -372,6 +411,25 @@
             <button onclick="addTypedTask('tomorrow','Work','work')">Add</button>
           </div>
         </div>
+      </div>
+
+      <div class="panel full-row" id="callScripts">
+        <div class="panel-head">
+          <h2>Call Scripts</h2>
+          <div class="cs-lang-toggle" id="csLangToggle">
+            <button class="cs-lang-btn" data-lang="en" onclick="setCsLang('en')">EN</button>
+            <button class="cs-lang-btn" data-lang="fr" onclick="setCsLang('fr')">FR</button>
+          </div>
+        </div>
+        <div class="desc">Live reference for cold calls — pick a category, then who's on the phone.</div>
+
+        <input type="text" id="csSearch" class="cs-search" placeholder="Search… e.g. &quot;hospitality warm&quot;" oninput="csSearchInput(this.value)">
+
+        <div class="cs-cat-row" id="csCategoryRow"></div>
+        <div class="cs-type-row" id="csTypeRow"></div>
+        <div id="csCardArea"></div>
+
+        <div class="cs-footer-note">If they say "maybe" or "send me something": always name a specific day/time for the callback before hanging up. Never leave it open-ended.</div>
       </div>
 
       <div class="panel full-row" id="workRoadmap">
@@ -772,6 +830,103 @@ const TARGET_CO_SEED = [
   { company: 'Payfit', product: 'HR Payroll SaaS', stage: 'Series D', hq: 'Paris HQ', english: 'Partial', pmf: 'Medium', openRoles: 'Check', priority: 'Low' }
 ];
 
+const PROSPECT_TYPES = [
+  { key: 'gatekeeper', label: 'Gatekeeper' },
+  { key: 'cold', label: 'Decision-Maker — Cold' },
+  { key: 'warm', label: 'Decision-Maker — Warm' },
+  { key: 'relaunch', label: 'Decision-Maker — Relaunch' },
+];
+
+const CALL_SCRIPTS_DATA = [
+  {
+    key: 'lnb',
+    category: 'Satellite LNBs',
+    angle: 'Premium installer positioning — better margins, fewer callbacks.',
+    magicWords: ['Premium installer solution', 'Better margins', 'Fewer callbacks', 'Professional alternative'],
+    scripts: [
+      { prospectType: 'gatekeeper',
+        en: "Hi, this is [Your Name] with [Company]. I just need five minutes with whoever handles purchasing for satellite equipment — premium LNBs your installers will actually notice the difference on. Who's that?",
+        fr: "Bonjour, je m'appelle [Your Name], je suis de [Company]. Je cherche juste cinq minutes avec votre responsable achats — marque premium de LNBs que vos installateurs vont adorer. C'est qui?" },
+      { prospectType: 'cold',
+        en: "Thanks for taking the call. I know you're busy so I'll be quick. We're [Company] — premium LNBs for professional installers. Your pro customers deserve better than commodity LNBs. We bring Quad/Octo LNBs with superior noise reduction — fewer callback calls, better margins for you. Worth 20 minutes this week?",
+        fr: "Merci d'avoir pris l'appel. Je sais que vous êtes occupé. On est [Company] — LNBs premium pour vos installateurs. Vos clients pro méritent mieux que des LNBs commodity. On apporte des Quad/Octo LNBs avec réduction de bruit supérieure — moins d'appels de rappel, meilleures marges pour vous. Ça vaut 20 minutes cette semaine?",
+        followUpLabel: 'If they say "maybe"',
+        followUp: { en: "No problem — I'll send a one-pager tonight. Can I call back Thursday for a real conversation?",
+                     fr: "Bien sûr, je vais vous envoyer un one-pager ce soir. Je vous rappelle jeudi pour une vraie discussion. Jeudi ça va?" } },
+    ],
+  },
+  {
+    key: 'modulators',
+    category: 'Modulators / Signal Distribution',
+    angle: 'New category expansion, volume opportunity, differentiation.',
+    magicWords: ['Volume opportunity', 'Complete solution', 'New category', 'Differentiation'],
+    scripts: [
+      { prospectType: 'gatekeeper',
+        en: "Hi, this is [Your Name] with [Company]. We're launching a premium line of modulators for distributors like you — could be a real fit for your pro customers. Who handles purchasing or category management for satellite/signal equipment?",
+        fr: "Bonjour, je m'appelle [Your Name], [Company]. On lance une ligne premium de modulateurs pour des distributeurs comme vous. Ça peut intéresser vos clients pros. C'est qui votre responsable achats ou catégorie?" },
+      { prospectType: 'cold',
+        en: "Thanks. You're a leader in your market — that's exactly why I called. Your pro customers are looking for complete solutions: LNBs, modulation, switching. That's where we come in. [Company] brings premium modulators you could sell through your existing platform — new category, real volume. Worth 20 minutes this week?",
+        fr: "Merci. Vous êtes leader sur votre marché — c'est justement pour ça que j'appelle. Vos clients pros cherchent des solutions complètes : LNB, modulation, switches. C'est là qu'on intervient. [Company] apporte des modulateurs premium que vous pourriez vendre via votre plateforme actuelle — nouvelle catégorie, volume significatif. Ça vaut 20 minutes cette semaine?",
+        followUpLabel: 'If they say "maybe"',
+        followUp: { en: "Perfect — I'll send specs and margin structure tonight. Can I call back Wednesday at 2pm for a real conversation?",
+                     fr: "Parfait. Je vous envoie les specs et la structure de marge ce soir. Je rappelle mercredi 14h pour un vrai call, ça marche?" } },
+    ],
+  },
+  {
+    key: 'amplifiers',
+    category: 'Amplifiers / RF Equipment',
+    angle: 'Professional/premium alternative to an incumbent brand, regional prestige.',
+    magicWords: ['Professional alternative', 'Brand prestige', 'Installer loyalty', 'Regional positioning'],
+    scripts: [
+      { prospectType: 'gatekeeper',
+        en: "Hi, this is [Your Name] with [Company]. Your region deserves premium product — I'm looking for five minutes with whoever manages purchasing. Who's that?",
+        fr: "Bonjour, je m'appelle [Your Name], je suis de [Company]. Votre région mérite des produits premium — je cherche cinq minutes avec qui gère vos achats. C'est qui?" },
+      { prospectType: 'cold',
+        en: "Thanks for taking the call. You've built a strong reputation in your area — that's what caught my attention. [Company] is a premium alternative to [incumbent brands] — better margins, and it gives your installers something to be proud to put their name behind. Worth a conversation this week?",
+        fr: "Merci d'avoir pris l'appel. Vous bâtissez une belle réputation dans votre région. [Company], c'est une alternative premium à [incumbent brands] — meilleures marges, et vos installateurs seront fiers de mettre leur nom dessus. On peut en parler cette semaine?",
+        followUpLabel: 'If they say "maybe"',
+        followUp: { en: "Understood — I'll send over the product comparison tonight. Can I follow up Thursday?",
+                     fr: "Compris. Je vous envoie la comparaison produit ce soir. Je vous rappelle jeudi?" } },
+    ],
+  },
+  {
+    key: 'hospitality',
+    category: 'Hospitality IPTV & Connectivity',
+    angle: 'Upgrade over existing infrastructure — no rewiring required.',
+    magicWords: ['Existing infrastructure', 'No rewiring', 'Gigabit over coax', 'Guest experience upgrade'],
+    scripts: [
+      { prospectType: 'warm',
+        en: "Hi [Contact Name], this is [Your Name] with [Company]. You got an email from us last week about IPTV solutions for hotels — I know email's easy to miss, so I wanted to reach out directly. Do you have 5 minutes now, or is there a better time this week?",
+        fr: "Bonjour [Contact Name], c'est [Your Name] de [Company]. On travaille avec les opérateurs hôteliers sur les solutions IPTV et la connectivité gigabit sur l'infrastructure existante. Avez-vous 5 minutes maintenant, ou y a-t-il un meilleur moment cette semaine?" },
+      { prospectType: 'cold',
+        en: "We work with hotel operators on IPTV and gigabit connectivity — delivered over your existing coax, no rewiring needed. I know [Company/Prospect] is expanding its hospitality footprint, and I think there's something worth a quick conversation. Are you the right person to talk infrastructure, or should I ask for someone else?",
+        fr: "On travaille avec les opérateurs hôteliers sur les solutions IPTV et la connectivité gigabit sur l'infrastructure existante — pas de recâblage nécessaire. Je pense qu'il y a quelque chose qui vaut la peine de discuter. Êtes-vous la bonne personne pour parler infrastructure, ou dois-je m'adresser à quelqu'un d'autre?",
+        followUpLabel: 'If they say "maybe"',
+        followUp: { en: "No problem — I'll send a one-pager on the infrastructure angle tonight. Can I follow up Thursday?",
+                     fr: "Pas de souci, je vous envoie un one-pager ce soir sur l'aspect infrastructure existante. Je rappelle jeudi?" } },
+    ],
+  },
+  {
+    key: 'general',
+    category: 'General Cold Prospecting',
+    angle: 'Land a 20-minute conversation, not a sale — pure cold dial from a prospect list.',
+    magicWords: ['Not yet in your market', 'Exactly the distributor we\'re looking for', 'Quick conversation not a sale'],
+    scripts: [
+      { prospectType: 'gatekeeper',
+        en: "Hi, this is [Your Name] with [Company]. I'd like just two minutes with whoever handles purchasing or supplier evaluation — is that you, or can you point me to the right person?",
+        fr: "Bonjour, je m'appelle [Your Name], [Company]. J'aimerais juste deux minutes avec la personne qui gère les achats ou l'évaluation fournisseurs — c'est vous, ou pouvez-vous m'orienter vers la bonne personne?",
+        followUpLabel: 'If they resist',
+        followUp: { en: "I understand. Just two minutes — I can call back in ten, or you can give me their email?",
+                     fr: "Je comprends. C'est juste deux minutes. Je peux rappeler dans dix minutes, ou vous pouvez me donner son email?" } },
+      { prospectType: 'cold',
+        en: "Thanks for taking the call, I'll be quick. We're [Company] — [one-line category description]. We're not yet distributed in [region], and you're exactly the kind of distributor we're looking for. Interested?",
+        fr: "Merci d'avoir pris l'appel. Je vais être rapide. On est [Company] — [one-line category description]. On n'est pas encore en distribution en [region], et vous êtes exactement le type de distributeur qu'on cherche. Ça vous intéresse?",
+        note: { en: '(Pause. Wait for response, then transition into the relevant product-category pitch above.)',
+                fr: '(Pause. Attendre la réponse, puis enchaîner avec le pitch spécifique à la catégorie.)' } },
+    ],
+  },
+];
+
 const TRACKER_SEED = [
   { company: 'Datadog', role: 'Account Executive EMEA', applied: '', source: 'LinkedIn', status: 'Applied', nextStep: 'Awaiting recruiter screen', notes: 'Series D, strong PMF, English-first Paris office' },
   { company: 'Aircall', role: 'Account Executive', applied: '', source: 'Careers page', status: 'Applied', nextStep: 'Follow up in 5 days', notes: 'Paris HQ, SaaS, English culture, 30-40% OTE' },
@@ -781,7 +936,7 @@ const TRACKER_SEED = [
 function loadState() {
   const raw = localStorage.getItem(STORAGE_KEY);
   if (raw) { try { return JSON.parse(raw); } catch (e) {} }
-  return { today: [], tomorrow: [], tracker: [], weeklyManual: {}, checkins: [], milestones: [], completedLog: [] };
+  return { today: [], tomorrow: [], tracker: [], weeklyManual: {}, checkins: [], milestones: [], completedLog: [], callScriptLang: 'en', callScriptFields: {} };
 }
 let state = loadState();
 function save() {
@@ -826,6 +981,8 @@ function seedDefaults() {
   if (!state.targetCos) { state.targetCos = TARGET_CO_SEED.map(x => ({ id: uid(), applied: false, ...x })); changed = true; }
   if (!state.tracker) { state.tracker = []; changed = true; }
   if (state.tracker.length === 0) { state.tracker = TRACKER_SEED.map(x => ({ id: uid(), ...x })); changed = true; }
+  if (!state.callScriptLang) { state.callScriptLang = 'en'; changed = true; }
+  if (!state.callScriptFields) { state.callScriptFields = {}; changed = true; }
   if (changed) save();
 }
 seedDefaults();
@@ -1249,6 +1406,181 @@ function updateWorkRoadmapNotes(id, notes) {
   save();
 }
 
+// ---------- Call Scripts ----------
+let csCategory = null;
+let csProspectType = null;
+let csSearchQuery = '';
+
+function selectCsCategory(key) { csCategory = key; csProspectType = null; renderCallScripts(); }
+function selectCsType(key) { csProspectType = key; renderCallScripts(); }
+function csSearchInput(val) { csSearchQuery = val; renderCallScripts(); }
+function setCsLang(lang) { state.callScriptLang = lang; save(); renderCallScripts(); }
+
+function fillCsPlaceholders(raw) {
+  return raw.replace(/\[([^\]]+)\]/g, (m, token) => {
+    const val = state.callScriptFields[token];
+    return val ? val : m;
+  });
+}
+function csScriptHtml(raw) {
+  return escapeHtml(raw).replace(/\[([^\]]+)\]/g, (m, token) => {
+    const val = state.callScriptFields[token];
+    const shown = val ? escapeHtml(val) : ('[' + escapeHtml(token) + ']');
+    return `<span class="cs-placeholder" contenteditable="true" spellcheck="false" data-token="${token.replace(/"/g, '&quot;')}" onfocus="csFieldFocus(this)" onblur="commitCsField(this)" onkeydown="csFieldKeydown(event,this)">${shown}</span>`;
+  });
+}
+function csFieldFocus(el) {
+  const token = el.dataset.token;
+  if (el.textContent === '[' + token + ']') el.textContent = '';
+}
+function csFieldKeydown(e, el) { if (e.key === 'Enter') { e.preventDefault(); el.blur(); } }
+function commitCsField(el) {
+  const token = el.dataset.token;
+  let val = el.textContent.trim();
+  if (val === '[' + token + ']') val = '';
+  state.callScriptFields[token] = val;
+  save();
+  renderCallScripts();
+}
+function copyCsScript(text, btn) {
+  navigator.clipboard.writeText(text).then(() => {
+    if (!btn) return;
+    const original = btn.textContent;
+    btn.textContent = 'Copied ✓';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = original; btn.classList.remove('copied'); }, 1500);
+  }).catch(() => { if (btn) btn.textContent = 'Copy failed'; });
+}
+
+function renderCsCard(cat, script, container) {
+  const lang = state.callScriptLang;
+  const raw = script[lang] || script.en;
+  const typeMeta = PROSPECT_TYPES.find(t => t.key === script.prospectType);
+
+  const card = document.createElement('div');
+  card.className = 'cs-card';
+
+  const head = document.createElement('div');
+  head.className = 'cs-card-head';
+  const title = document.createElement('div');
+  title.className = 'cs-card-title';
+  title.textContent = cat.category + ' — ' + (typeMeta ? typeMeta.label : script.prospectType);
+  const copyBtn = document.createElement('button');
+  copyBtn.className = 'cs-copy-btn';
+  copyBtn.textContent = 'Copy';
+  copyBtn.onclick = () => copyCsScript(fillCsPlaceholders(raw), copyBtn);
+  head.appendChild(title); head.appendChild(copyBtn);
+  card.appendChild(head);
+
+  const textEl = document.createElement('div');
+  textEl.className = 'cs-script-text';
+  textEl.innerHTML = csScriptHtml(raw);
+  card.appendChild(textEl);
+
+  if (script.note) {
+    const noteEl = document.createElement('div');
+    noteEl.className = 'cs-note';
+    noteEl.textContent = script.note[lang] || script.note.en;
+    card.appendChild(noteEl);
+  }
+
+  if (script.followUp) {
+    const details = document.createElement('details');
+    details.className = 'cs-followup';
+    const summary = document.createElement('summary');
+    summary.textContent = script.followUpLabel || 'Follow-up';
+    details.appendChild(summary);
+    const followText = document.createElement('div');
+    followText.className = 'cs-followup-text';
+    followText.innerHTML = csScriptHtml(script.followUp[lang] || script.followUp.en);
+    details.appendChild(followText);
+    card.appendChild(details);
+  }
+
+  const tags = document.createElement('div');
+  tags.className = 'cs-tags';
+  cat.magicWords.forEach(w => {
+    const tag = document.createElement('span');
+    tag.className = 'cs-tag';
+    tag.textContent = w;
+    tags.appendChild(tag);
+  });
+  card.appendChild(tags);
+
+  container.appendChild(card);
+}
+
+function renderCallScripts() {
+  document.querySelectorAll('.cs-lang-btn').forEach(b => b.classList.toggle('active', b.dataset.lang === state.callScriptLang));
+
+  const q = csSearchQuery.trim().toLowerCase();
+  const words = q.split(/\s+/).filter(Boolean);
+  const textMatches = (hay) => !q || words.every(w => hay.includes(w));
+
+  const catRow = document.getElementById('csCategoryRow');
+  const typeRow = document.getElementById('csTypeRow');
+  const cardArea = document.getElementById('csCardArea');
+
+  const visibleCats = CALL_SCRIPTS_DATA.filter(cat => {
+    if (!q) return true;
+    if (textMatches(cat.category.toLowerCase())) return true;
+    return cat.scripts.some(s => {
+      const label = (PROSPECT_TYPES.find(t => t.key === s.prospectType) || {}).label || '';
+      return textMatches((cat.category + ' ' + label).toLowerCase());
+    });
+  });
+
+  if (csCategory && !visibleCats.find(c => c.key === csCategory)) { csCategory = null; csProspectType = null; }
+  if (!csCategory && q && visibleCats.length === 1) { csCategory = visibleCats[0].key; }
+
+  catRow.innerHTML = '';
+  if (visibleCats.length === 0) {
+    catRow.innerHTML = '<div class="cs-empty-hint">No scripts match your search.</div>';
+  } else {
+    visibleCats.forEach(cat => {
+      const btn = document.createElement('button');
+      btn.className = 'cs-cat-btn' + (csCategory === cat.key ? ' active' : '');
+      btn.textContent = cat.category;
+      btn.onclick = () => selectCsCategory(cat.key);
+      catRow.appendChild(btn);
+    });
+  }
+
+  typeRow.innerHTML = '';
+  cardArea.innerHTML = '';
+  const activeCat = CALL_SCRIPTS_DATA.find(c => c.key === csCategory);
+  if (!activeCat) {
+    cardArea.innerHTML = '<div class="cs-empty-hint">Pick a category above to see scripts.</div>';
+    return;
+  }
+
+  let visibleTypes = activeCat.scripts.filter(s => {
+    if (!q) return true;
+    const label = (PROSPECT_TYPES.find(t => t.key === s.prospectType) || {}).label || '';
+    return textMatches((activeCat.category + ' ' + label).toLowerCase()) || textMatches(activeCat.category.toLowerCase());
+  });
+  if (visibleTypes.length === 0) visibleTypes = activeCat.scripts;
+
+  if (csProspectType && !visibleTypes.find(s => s.prospectType === csProspectType)) csProspectType = null;
+  if (!csProspectType && visibleTypes.length === 1) csProspectType = visibleTypes[0].prospectType;
+
+  visibleTypes.forEach(s => {
+    const meta = PROSPECT_TYPES.find(t => t.key === s.prospectType);
+    const btn = document.createElement('button');
+    btn.className = 'cs-type-btn' + (csProspectType === s.prospectType ? ' active' : '');
+    btn.textContent = meta ? meta.label : s.prospectType;
+    btn.onclick = () => selectCsType(s.prospectType);
+    typeRow.appendChild(btn);
+  });
+
+  const activeScript = activeCat.scripts.find(s => s.prospectType === csProspectType);
+  if (!activeScript) {
+    cardArea.innerHTML = '<div class="cs-empty-hint">Pick who\'s on the phone above.</div>';
+    return;
+  }
+  renderCsCard(activeCat, activeScript, cardArea);
+}
+
 function renderTargets() {
   const now = new Date();
   const wk = isoWeekKey(now);
@@ -1383,6 +1715,7 @@ function renderAll() {
   renderHeader();
   renderTaskListsAll();
   renderWorkRoadmap();
+  renderCallScripts();
   renderTracker();
   renderTargetCos();
   renderRoadmap();
