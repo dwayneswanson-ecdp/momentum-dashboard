@@ -246,11 +246,13 @@
   .wr-section-purple { background: var(--purple-light); color: var(--purple); }
   .wr-section-amber { background: var(--amber-light); color: var(--amber); }
   .wr-section-work { background: var(--accent-light); color: var(--accent-dark); }
+  .wr-section-orange { background: var(--orange-light); color: var(--orange); }
   .wr-num { display: inline-flex; align-items: center; justify-content: center; font-weight: 800; padding: 3px 8px; border-radius: 999px; white-space: nowrap; }
   .wr-num-blue { background: var(--blue-light); color: var(--blue); }
   .wr-num-purple { background: var(--purple-light); color: var(--purple); }
   .wr-num-amber { background: var(--amber-light); color: var(--amber); }
   .wr-num-work { background: var(--accent-light); color: var(--accent-dark); }
+  .wr-num-orange { background: var(--orange-light); color: var(--orange); }
   .wr-action, .wr-desc-cell { font-weight: 400; }
   .wr-row-in-progress { background: var(--orange-light); }
   .wr-row-in-progress .wr-action, .wr-row-in-progress .wr-desc-cell { color: var(--orange); }
@@ -799,9 +801,10 @@ const ROADMAP_SEED = [
 
 const WORK_PRIORITY_SECTIONS = [
   { id: 1, title: 'Priority 1 — One-to-One File Update', sub: 'Deadline: end of July — feeds directly into September budget prep', color: 'blue' },
-  { id: 2, title: 'Priority 2 — Protection Tour Plan', sub: 'France, Belgium, Netherlands — July / Aug / Sept', color: 'purple' },
+  { id: 2, title: 'Priority 2 — Protection Tour Plan', sub: 'France, Belgium, Ireland, Spain, Netherlands — July / Aug / Sept', color: 'purple' },
   { id: 3, title: 'Priority 3 — Shift Time to Active Prospecting', sub: 'Ongoing — starts now', color: 'amber' },
   { id: 4, title: 'Priority 4 — Weekly Tracking Habit', sub: 'Recurring', color: 'work' },
+  { id: 5, title: 'Priority 5 — Fiber/LAN Strategic Pivot', sub: 'ISPs, network operators & enterprise — tender-ready before end of 2026', color: 'orange' },
 ];
 const WORK_ROADMAP_SEED = [
   { section: 1, action: 'Audit and consolidate the opportunity pipeline', text: 'Deliverable: a single current list of every open opportunity across France, Belgium, and Netherlands — no gaps, no duplicates.' },
@@ -811,7 +814,7 @@ const WORK_ROADMAP_SEED = [
   { section: 1, action: 'Triage unresponsive contacts', text: "For every contact flagged \"no answer since [month],\" make an explicit call: re-engage by phone this week, escalate to a new contact method, or archive as dead." },
   { section: 1, action: 'Assess product-fit potential', text: 'Note which product(s) each opportunity is realistically suited for, so sales effort maps to the right offer.' },
   { section: 1, action: 'Set close timelines', text: 'Attach an expected close date to every opportunity so the file reflects a forecastable pipeline, not just a contact list.' },
-  { section: 2, action: 'Scope the target account list', text: 'Identify and prioritize the operators/distributors worth an in-person visit in each of the three countries.' },
+  { section: 2, action: 'Scope the target account list', text: 'Identify and prioritize the operators/distributors worth an in-person visit across France, Belgium, Ireland, Spain, and Netherlands.' },
   { section: 2, action: 'Propose a visit window', text: 'Recommend candidate month(s) and rough dates per country, balanced against the budget-prep deadline and travel constraints.' },
   { section: 2, action: 'Build the tour itinerary', text: 'Draft a day-by-day schedule — cities, meeting slots, and named contacts — so the trip has a clear operational plan, not just a destination list.' },
   { section: 2, action: 'Lock in meeting confirmations', text: 'Get explicit confirmation from key contacts before any travel is booked, to avoid paying for unconfirmed visits.' },
@@ -824,6 +827,11 @@ const WORK_ROADMAP_SEED = [
   { section: 4, action: 'Run the Friday file update', text: "Every Friday, reconcile the one-to-one file so every status reflects that week's actual activity — no stale entries carried forward." },
   { section: 4, action: 'Log weekly activity metrics', text: 'Every Friday, record calls made, meetings held, and new opportunities added — the raw numbers behind the file update.' },
   { section: 4, action: 'Report the monthly trend', text: 'Once a month, compare pipeline growth against the prior month and note the trend, ready to bring into your check-in with Yannick.' },
+  { section: 5, action: 'Wind down new hospitality prospecting', text: 'Stop new business-development outreach in the hospitality vertical — existing hospitality accounts and relationships continue unaffected.' },
+  { section: 5, action: 'Update sales messaging', text: 'Lead with core products — LNB dishes and dish kits — plus the renewed fiber optic and LAN cable capability, replacing hospitality-led framing in prospecting materials and scripts.' },
+  { section: 5, action: 'Identify target accounts', text: 'Build a target list of ISPs, network operators, and large enterprises (data centers, colocation providers) across Spain, France, and the Netherlands.' },
+  { section: 5, action: 'Prepare tender-ready collateral', text: 'Assemble the materials needed to respond to tenders before end of 2026 — specs, pricing, and capability statements. [CONFIRM LEAD TIME] and any certifications before publishing externally.' },
+  { section: 5, action: 'Confirm Q1 2027 delivery readiness', text: 'Validate internally that fiber and LAN cable delivery capability is in place to support a Q1 2027 start, ahead of committing to tender responses.' },
 ];
 
 const TARGET_CO_SEED = [
@@ -904,20 +912,20 @@ const CALL_SCRIPTS_DATA = [
     ],
   },
   {
-    key: 'hospitality', color: 'orange',
-    category: 'Hospitality IPTV & Connectivity',
-    angle: 'Upgrade over existing infrastructure — no rewiring required.',
-    magicWords: ['Existing infrastructure', 'No rewiring', 'Gigabit over coax', 'Guest experience upgrade'],
+    key: 'fiber', color: 'orange',
+    category: 'Fiber & LAN Cable Solutions',
+    angle: 'Renewed strategic focus alongside core LNB dishes/kits — positioning for ISP and enterprise tenders ahead of 2026.',
+    magicWords: ['Fiber optic cable supplier', 'LAN cable supplier', 'ISP infrastructure supplier', 'Tender-ready for 2026', '[CONFIRM LEAD TIME] from Q1 2027'],
     scripts: [
-      { prospectType: 'warm',
-        en: "Hi [Contact Name], this is [Your Name] with [Company]. You got an email from us last week about IPTV solutions for hotels — I know email's easy to miss, so I wanted to reach out directly. Do you have 5 minutes now, or is there a better time this week?",
-        fr: "Bonjour [Contact Name], c'est [Your Name] de [Company]. On travaille avec les opérateurs hôteliers sur les solutions IPTV et la connectivité gigabit sur l'infrastructure existante. Avez-vous 5 minutes maintenant, ou y a-t-il un meilleur moment cette semaine?" },
+      { prospectType: 'gatekeeper',
+        en: "Hi, this is [Your Name] with [Company]. We supply fiber optic and LAN cable solutions to ISPs and network operators — I just need five minutes with whoever handles network infrastructure procurement. Who's that?",
+        fr: "Bonjour, je m'appelle [Your Name], je suis de [Company]. On fournit des solutions de câbles fibre optique et LAN aux FAI et opérateurs réseau — je cherche cinq minutes avec la personne en charge des achats infrastructure réseau. C'est qui?" },
       { prospectType: 'cold',
-        en: "We work with hotel operators on IPTV and gigabit connectivity — delivered over your existing coax, no rewiring needed. I know [Company/Prospect] is expanding its hospitality footprint, and I think there's something worth a quick conversation. Are you the right person to talk infrastructure, or should I ask for someone else?",
-        fr: "On travaille avec les opérateurs hôteliers sur les solutions IPTV et la connectivité gigabit sur l'infrastructure existante — pas de recâblage nécessaire. Je pense qu'il y a quelque chose qui vaut la peine de discuter. Êtes-vous la bonne personne pour parler infrastructure, ou dois-je m'adresser à quelqu'un d'autre?",
+        en: "Thanks for taking the call, I'll be quick. We're [Company] — alongside our core LNB dishes and dish kits, we've built out a dedicated fiber optic and LAN cable supply capability for ISPs, network operators, and large enterprise sites like data centers and colocation facilities. We're positioning to respond to tenders before the end of this year, with delivery capability from Q1 2027. Worth 20 minutes to see if there's a fit for your upcoming infrastructure plans?",
+        fr: "Merci d'avoir pris l'appel, je vais être rapide. On est [Company] — en plus de nos LNB et kits paraboliques historiques, on a développé une offre dédiée de câbles fibre optique et LAN pour les FAI, opérateurs réseau, et grands sites d'entreprise comme les data centers et colocations. On se positionne pour répondre aux appels d'offres avant la fin de l'année, avec une capacité de livraison à partir du T1 2027. Ça vaut 20 minutes pour voir s'il y a un intérêt pour vos projets infrastructure à venir?",
         followUpLabel: 'If they say "maybe"',
-        followUp: { en: "No problem — I'll send a one-pager on the infrastructure angle tonight. Can I follow up Thursday?",
-                     fr: "Pas de souci, je vous envoie un one-pager ce soir sur l'aspect infrastructure existante. Je rappelle jeudi?" } },
+        followUp: { en: "Understood — I'll send our fiber & LAN cable overview tonight, including [CONFIRM LEAD TIME] delivery details. Can I call back Thursday to go over tender timing?",
+                     fr: "Compris — je vous envoie ce soir notre présentation câbles fibre & LAN, avec les détails de délai [CONFIRM LEAD TIME]. Je vous rappelle jeudi pour parler du calendrier d'appel d'offres?" } },
     ],
   },
   {
@@ -1014,6 +1022,17 @@ function refreshWorkRoadmapContent() {
     if (seedForItem && (item.action !== seedForItem.action || item.text !== seedForItem.text)) {
       item.action = seedForItem.action;
       item.text = seedForItem.text;
+      changed = true;
+    }
+  });
+  // Append any whole new sections introduced since this state was first seeded
+  const presentSections = new Set(state.workRoadmap.map(i => i.section));
+  Object.keys(bySection).forEach(sectionKey => {
+    const sectionNum = Number(sectionKey);
+    if (!presentSections.has(sectionNum)) {
+      bySection[sectionKey].forEach(seed => {
+        state.workRoadmap.push({ id: uid(), done: false, status: 'Not Started', notes: '', ...seed });
+      });
       changed = true;
     }
   });
