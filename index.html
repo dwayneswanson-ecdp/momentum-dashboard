@@ -20,6 +20,7 @@
     --blue-light: #dbeafe;
     --purple: #7c3aed;
     --purple-light: #ede9fe;
+    --work: var(--accent);
     --border: #e8ece9;
     --bg: #f3f6f4;
     --card: #ffffff;
@@ -52,6 +53,8 @@
   nav.navlist a.active { background: var(--accent-light); color: var(--accent-dark); }
   nav.navlist .nav-sub { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; font-weight: 700; margin: 14px 0 4px 12px; }
   nav.navlist .nav-sub:first-child { margin-top: 0; }
+  nav.navlist a.nav-child { margin-left: 16px; padding-top: 7px; padding-bottom: 7px; border-left: 2px solid var(--border); border-radius: 0 10px 10px 0; }
+  nav.navlist a.nav-child.active { border-left-color: var(--accent); }
   .sidebar-footer {
     margin-top: 16px; background: linear-gradient(160deg, var(--dark), #1c4a3c); color: #fff; border-radius: 14px;
     padding: 16px 14px; font-size: 12px; flex-shrink: 0;
@@ -262,32 +265,38 @@
   .wr-notes:empty:before { content: attr(data-placeholder); color: var(--muted); }
 
   /* Call Scripts */
+  .cs-toolbar { display: flex; gap: 10px; align-items: center; margin-bottom: 16px; }
   .cs-lang-toggle { display: flex; gap: 4px; background: var(--bg); border-radius: 8px; padding: 3px; flex-shrink: 0; }
   .cs-lang-btn { border: none; background: transparent; padding: 6px 14px; border-radius: 6px; font-weight: 700; cursor: pointer; color: var(--muted); }
   .cs-lang-btn.active { background: var(--card); color: var(--accent-dark); box-shadow: 0 1px 2px rgba(0,0,0,.08); }
-  .cs-search { width: 100%; padding: 11px 14px; border: 1px solid var(--border); border-radius: 10px; margin: 10px 0 14px; }
+  .cs-search { flex: 1; padding: 11px 14px; border: 1px solid var(--border); border-radius: 10px; }
   .cs-cat-row, .cs-type-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
-  .cs-cat-btn, .cs-type-btn { border: 1px solid var(--border); background: var(--card); padding: 10px 14px; border-radius: 10px; cursor: pointer; font-weight: 600; text-align: left; min-height: 40px; }
-  .cs-cat-btn.active { background: var(--dark); border-color: var(--dark); color: #fff; }
+  .cs-cat-btn, .cs-type-btn { border: 1px solid var(--border); background: var(--card); padding: 10px 14px; border-radius: 10px; cursor: pointer; font-weight: 600; text-align: left; min-height: 40px; display: flex; align-items: center; gap: 8px; }
+  .cs-cat-btn:before { content: ''; width: 8px; height: 8px; border-radius: 999px; background: var(--cat-color, var(--muted)); flex-shrink: 0; }
+  .cs-cat-btn.active { background: var(--cat-color, var(--dark)); border-color: var(--cat-color, var(--dark)); color: #fff; }
+  .cs-cat-btn.active:before { background: #fff; }
   .cs-type-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
   .cs-empty-hint { color: var(--muted); font-style: italic; padding: 6px 2px; }
-  .cs-card { border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 14px; }
-  .cs-card-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
-  .cs-card-title { font-weight: 800; }
+  .cs-card { border: 1px solid var(--border); border-left: 5px solid var(--cat-color, var(--dark)); border-radius: 12px; padding: 20px 22px; margin-bottom: 14px; background: #fff; box-shadow: 0 2px 10px rgba(16,48,42,.05); }
+  .cs-card-kicker { font-size: 10.5px !important; font-weight: 800 !important; letter-spacing: .07em; text-transform: uppercase; color: var(--cat-color, var(--muted)); margin-bottom: 8px; }
+  .cs-card-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 6px; flex-wrap: wrap; }
+  .cs-card-title { font-weight: 800; font-size: 15px !important; }
   .cs-copy-btn { border: 1px solid var(--border); background: var(--card); padding: 8px 14px; border-radius: 8px; cursor: pointer; font-weight: 700; min-height: 38px; }
   .cs-copy-btn.copied { background: var(--accent-light); border-color: var(--accent); color: var(--accent-dark); }
-  .cs-script-text { font-size: 16px !important; line-height: 1.6; padding: 4px 2px; }
+  .cs-say-label { font-size: 10.5px !important; font-weight: 800 !important; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 14px 0 6px; }
+  .cs-script-text { font-size: 18px !important; font-weight: 500; line-height: 1.55; padding: 2px; }
   .cs-placeholder { display: inline; background: var(--amber-light); color: var(--amber); border-radius: 4px; padding: 1px 5px; cursor: text; font-weight: 700; }
   .cs-placeholder:focus { outline: 2px solid var(--accent); background: #fff; }
   .cs-note { font-size: 13px !important; font-style: italic; color: var(--muted); margin-top: 8px; }
-  .cs-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+  .cs-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 16px; }
   .cs-tag { background: var(--bg); border: 1px solid var(--border); color: var(--muted); padding: 3px 10px; border-radius: 999px; }
-  .cs-followup { margin-top: 12px; }
+  .cs-followup { margin-top: 14px; border-top: 1px dashed var(--border); padding-top: 10px; }
   .cs-followup summary { cursor: pointer; font-weight: 700; color: var(--accent-dark); padding: 6px 0; min-height: 30px; }
   .cs-followup-text { font-size: 15px !important; line-height: 1.5; padding: 8px 10px; background: var(--bg); border-radius: 8px; margin-top: 6px; }
   .cs-footer-note { margin-top: 14px; padding: 10px 12px; background: var(--amber-light); color: var(--amber); border-radius: 8px; font-weight: 600; }
   @media (max-width: 600px) {
     .cs-cat-btn, .cs-type-btn { flex: 1 1 calc(50% - 8px); }
+    .cs-toolbar { flex-wrap: wrap; }
   }
 
   /* Salary cheat sheet */
@@ -313,6 +322,7 @@
   .stat-card .value { font-size: 22px !important; font-weight: 800 !important; }
   .ring-inner .pct { font-size: 18px !important; font-weight: 800 !important; }
   nav.navlist a { font-size: 13px !important; }
+  nav.navlist a.nav-child { font-size: 12px !important; }
   nav.navlist a.active { font-weight: 700 !important; }
   .quote-banner .txt { font-size: 13px !important; font-weight: 700 !important; font-style: italic; }
 </style>
@@ -325,6 +335,7 @@
     <nav class="navlist">
       <a data-view="overview" class="active">📊&nbsp; Overview</a>
       <a data-view="work">💼&nbsp; Work</a>
+      <a data-view="callscripts" class="nav-child">📞&nbsp; Call Scripts</a>
       <a data-view="jobsearch">🎯&nbsp; Job Search</a>
       <a data-view="personal">🌿&nbsp; Personal</a>
       <a data-view="checkin">💬&nbsp; Check-in</a>
@@ -413,25 +424,6 @@
         </div>
       </div>
 
-      <div class="panel full-row" id="callScripts">
-        <div class="panel-head">
-          <h2>Call Scripts</h2>
-          <div class="cs-lang-toggle" id="csLangToggle">
-            <button class="cs-lang-btn" data-lang="en" onclick="setCsLang('en')">EN</button>
-            <button class="cs-lang-btn" data-lang="fr" onclick="setCsLang('fr')">FR</button>
-          </div>
-        </div>
-        <div class="desc">Live reference for cold calls — pick a category, then who's on the phone.</div>
-
-        <input type="text" id="csSearch" class="cs-search" placeholder="Search… e.g. &quot;hospitality warm&quot;" oninput="csSearchInput(this.value)">
-
-        <div class="cs-cat-row" id="csCategoryRow"></div>
-        <div class="cs-type-row" id="csTypeRow"></div>
-        <div id="csCardArea"></div>
-
-        <div class="cs-footer-note">If they say "maybe" or "send me something": always name a specific day/time for the callback before hanging up. Never leave it open-ended.</div>
-      </div>
-
       <div class="panel full-row" id="workRoadmap">
         <div class="panel-head">
           <h2>Priorities Roadmap</h2>
@@ -470,6 +462,28 @@
           </tbody>
         </table>
       </details>
+    </section>
+
+    <!-- ============ CALL SCRIPTS ============ -->
+    <section class="view" id="view-callscripts">
+      <div class="view-head">
+        <h1>Call Scripts</h1>
+        <div class="sub">Live reference for cold calls — pick a category, then who's on the phone.</div>
+      </div>
+
+      <div class="cs-toolbar">
+        <input type="text" id="csSearch" class="cs-search" placeholder="Search… e.g. &quot;hospitality warm&quot;" oninput="csSearchInput(this.value)">
+        <div class="cs-lang-toggle" id="csLangToggle">
+          <button class="cs-lang-btn" data-lang="en" onclick="setCsLang('en')">EN</button>
+          <button class="cs-lang-btn" data-lang="fr" onclick="setCsLang('fr')">FR</button>
+        </div>
+      </div>
+
+      <div class="cs-cat-row" id="csCategoryRow"></div>
+      <div class="cs-type-row" id="csTypeRow"></div>
+      <div id="csCardArea"></div>
+
+      <div class="cs-footer-note">If they say "maybe" or "send me something": always name a specific day/time for the callback before hanging up. Never leave it open-ended.</div>
     </section>
 
     <!-- ============ JOB SEARCH ============ -->
@@ -839,7 +853,7 @@ const PROSPECT_TYPES = [
 
 const CALL_SCRIPTS_DATA = [
   {
-    key: 'lnb',
+    key: 'lnb', color: 'blue',
     category: 'Satellite LNBs',
     angle: 'Premium installer positioning — better margins, fewer callbacks.',
     magicWords: ['Premium installer solution', 'Better margins', 'Fewer callbacks', 'Professional alternative'],
@@ -856,7 +870,7 @@ const CALL_SCRIPTS_DATA = [
     ],
   },
   {
-    key: 'modulators',
+    key: 'modulators', color: 'purple',
     category: 'Modulators / Signal Distribution',
     angle: 'New category expansion, volume opportunity, differentiation.',
     magicWords: ['Volume opportunity', 'Complete solution', 'New category', 'Differentiation'],
@@ -873,7 +887,7 @@ const CALL_SCRIPTS_DATA = [
     ],
   },
   {
-    key: 'amplifiers',
+    key: 'amplifiers', color: 'amber',
     category: 'Amplifiers / RF Equipment',
     angle: 'Professional/premium alternative to an incumbent brand, regional prestige.',
     magicWords: ['Professional alternative', 'Brand prestige', 'Installer loyalty', 'Regional positioning'],
@@ -890,7 +904,7 @@ const CALL_SCRIPTS_DATA = [
     ],
   },
   {
-    key: 'hospitality',
+    key: 'hospitality', color: 'orange',
     category: 'Hospitality IPTV & Connectivity',
     angle: 'Upgrade over existing infrastructure — no rewiring required.',
     magicWords: ['Existing infrastructure', 'No rewiring', 'Gigabit over coax', 'Guest experience upgrade'],
@@ -907,7 +921,7 @@ const CALL_SCRIPTS_DATA = [
     ],
   },
   {
-    key: 'general',
+    key: 'general', color: 'work',
     category: 'General Cold Prospecting',
     angle: 'Land a 20-minute conversation, not a sale — pure cold dial from a prospect list.',
     magicWords: ['Not yet in your market', 'Exactly the distributor we\'re looking for', 'Quick conversation not a sale'],
@@ -1459,18 +1473,29 @@ function renderCsCard(cat, script, container) {
 
   const card = document.createElement('div');
   card.className = 'cs-card';
+  card.style.setProperty('--cat-color', 'var(--' + cat.color + ')');
+
+  const kicker = document.createElement('div');
+  kicker.className = 'cs-card-kicker';
+  kicker.textContent = '📞 Script — ' + cat.category;
+  card.appendChild(kicker);
 
   const head = document.createElement('div');
   head.className = 'cs-card-head';
   const title = document.createElement('div');
   title.className = 'cs-card-title';
-  title.textContent = cat.category + ' — ' + (typeMeta ? typeMeta.label : script.prospectType);
+  title.textContent = typeMeta ? typeMeta.label : script.prospectType;
   const copyBtn = document.createElement('button');
   copyBtn.className = 'cs-copy-btn';
   copyBtn.textContent = 'Copy';
   copyBtn.onclick = () => copyCsScript(fillCsPlaceholders(raw), copyBtn);
   head.appendChild(title); head.appendChild(copyBtn);
   card.appendChild(head);
+
+  const sayLabel = document.createElement('div');
+  sayLabel.className = 'cs-say-label';
+  sayLabel.textContent = 'YOU SAY';
+  card.appendChild(sayLabel);
 
   const textEl = document.createElement('div');
   textEl.className = 'cs-script-text';
@@ -1540,6 +1565,7 @@ function renderCallScripts() {
     visibleCats.forEach(cat => {
       const btn = document.createElement('button');
       btn.className = 'cs-cat-btn' + (csCategory === cat.key ? ' active' : '');
+      btn.style.setProperty('--cat-color', 'var(--' + cat.color + ')');
       btn.textContent = cat.category;
       btn.onclick = () => selectCsCategory(cat.key);
       catRow.appendChild(btn);
