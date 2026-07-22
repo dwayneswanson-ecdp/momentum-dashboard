@@ -286,7 +286,7 @@
   .cs-copy-btn { border: 1px solid var(--border); background: var(--card); padding: 8px 14px; border-radius: 8px; cursor: pointer; font-weight: 700; min-height: 38px; }
   .cs-copy-btn.copied { background: var(--accent-light); border-color: var(--accent); color: var(--accent-dark); }
   .cs-say-label { font-size: 10.5px !important; font-weight: 800 !important; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 14px 0 6px; }
-  .cs-script-text { font-size: 18px !important; font-weight: 500; line-height: 1.55; padding: 2px; }
+  .cs-script-text { font-size: 18px !important; font-weight: 500; line-height: 1.55; padding: 2px; white-space: pre-line; }
   .cs-placeholder { display: inline; background: var(--amber-light); color: var(--amber); border-radius: 4px; padding: 1px 5px; cursor: text; font-weight: 700; }
   .cs-placeholder:focus { outline: 2px solid var(--accent); background: #fff; }
   .cs-note { font-size: 13px !important; font-style: italic; color: var(--muted); margin-top: 8px; }
@@ -296,6 +296,10 @@
   .cs-followup summary { cursor: pointer; font-weight: 700; color: var(--accent-dark); padding: 6px 0; min-height: 30px; }
   .cs-followup-text { font-size: 15px !important; line-height: 1.5; padding: 8px 10px; background: var(--bg); border-radius: 8px; margin-top: 6px; }
   .cs-footer-note { margin-top: 14px; padding: 10px 12px; background: var(--amber-light); color: var(--amber); border-radius: 8px; font-weight: 600; }
+  .fp-progress { font-weight: 700; color: var(--muted); flex-shrink: 0; }
+  .fp-slide-nav { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 14px; }
+  .fp-slide-btn { flex-shrink: 0; width: 36px; height: 36px; min-height: 36px; border-radius: 8px; border: 1px solid var(--border); background: var(--card); font-weight: 700; cursor: pointer; }
+  .fp-slide-btn.active { background: var(--orange); border-color: var(--orange); color: #fff; }
   @media (max-width: 600px) {
     .cs-cat-btn, .cs-type-btn { flex: 1 1 calc(50% - 8px); }
     .cs-toolbar { flex-wrap: wrap; }
@@ -338,6 +342,7 @@
       <a data-view="overview" class="active">📊&nbsp; Overview</a>
       <a data-view="work">💼&nbsp; Work</a>
       <a data-view="callscripts" class="nav-child">📞&nbsp; Call Scripts</a>
+      <a data-view="fiberpres" class="nav-child">🎤&nbsp; Fiber Presentation</a>
       <a data-view="jobsearch">🎯&nbsp; Job Search</a>
       <a data-view="personal">🌿&nbsp; Personal</a>
       <a data-view="checkin">💬&nbsp; Check-in</a>
@@ -486,6 +491,25 @@
       <div id="csCardArea"></div>
 
       <div class="cs-footer-note">If they say "maybe" or "send me something": always name a specific day/time for the callback before hanging up. Never leave it open-ended.</div>
+    </section>
+
+    <!-- ============ FIBER PRESENTATION ============ -->
+    <section class="view" id="view-fiberpres">
+      <div class="view-head">
+        <h1>Fiber Presentation</h1>
+        <div class="sub">Inverto Fiber Optic Cable Solutions — slide-by-slide talk track, ~1–2 min per slide.</div>
+      </div>
+
+      <div class="cs-toolbar">
+        <div class="fp-progress">Slide <span id="fpSlideNum">1</span> of 24</div>
+        <div style="display:flex; gap:8px;">
+          <button class="btn-ghost" onclick="fpPrev()">← Prev</button>
+          <button class="btn-ghost" onclick="fpNext()">Next →</button>
+        </div>
+      </div>
+
+      <div class="fp-slide-nav" id="fpSlideRow"></div>
+      <div id="fpCardArea"></div>
     </section>
 
     <!-- ============ JOB SEARCH ============ -->
@@ -859,6 +883,33 @@ const PROSPECT_TYPES = [
   { key: 'relaunch', label: 'Decision-Maker — Relaunch' },
 ];
 
+const FIBER_PRESENTATION_SCRIPT = [
+  { num: 1, title: '', text: "Good [morning/afternoon], everyone. Thanks for the time today. I'm here to walk you through Inverto's Fiber Optic Cable Solutions, this is a new product line we're bringing to market, and it's a natural extension of what Inverto has already been doing for over three decades in broadcast and broadband." },
+  { num: 2, title: 'About Us', text: "Before we get into the product line, let me quickly ground you in who Inverto is, in case this is new to you.\nWe're an ICT company, hardware and software for the global broadcast and broadband markets, headquartered in Luxembourg. We're not a small player: 1,100 employees, 105 of them dedicated software and hardware engineers. We do everything in-house, R&D, design, test, and production, and we back that with international sales and services support.\nGlobally, we've got a real footprint: four manufacturing plants in China, sales offices across Luxembourg, France, the UK, Romania, India, Mexico, and Dubai, and R&D centers spread across Luxembourg, Poland, Israel, the UK, France, and Denmark. So when we talk about global scale later in this deck, that's not a marketing line, that's the infrastructure behind it." },
+  { num: 3, title: 'Key Figures', text: "A few numbers to put that in context. We're doing 120 million euros in sales revenue, growing at 35% annually, and 60% of that revenue comes from outside Europe, so this is a genuinely global business.\nWe reinvest 10% of annual turnover back into the business, and 10% of our workforce sits in R&D, that's the engine behind new product lines like this one. And physically, we're running 250,000 square meters of industrial production surface.\nThe logos on the right are the proof point, these are the operators and brands we already ship to: Airtel, Canal+, DIRECTV, Sky, Eutelsat, SES, CommScope, and many more." },
+  { num: 4, title: 'Cutting-Edge Technologies and Innovations in Manufacturing', text: "This slide is about proving we can actually produce at the volumes this conversation implies. Our cable plants alone run 120,000 kilometers per month on Plant 1, and 1.2 million units per month on Plant 2. Our SMT lines place 120,000 components per hour, per line, and we run 30 hardware production lines in parallel.\nAnd it's certified: ISO 9001, ISO 14001, RoHS, REACH compliant, and built to ASTM, SCTE, TIA/EIA, and EN50117 standards. So however big the rollout is, we're not scaling up from a standing start, this capacity already exists today." },
+  { num: 5, title: 'From Signal to Data', text: "So here's the actual pitch for the fiber line. Inverto has spent three decades in RF and broadcast engineering, think LNBs, dishes, coax. Fiber is a natural extension of that: it's still about signal integrity, just in a different medium.\nFour things anchor this product line, and I want you to remember these because they'll come up again: engineering-led design, our RF, optical, and systems expertise goes into every cable construction. Vertical integration, we own the process from raw material qualification all the way to a finished, tested reel. Specification-first, every single cable we build starts from your Customer Requirements Document, not our off-the-shelf spec. And global scale, this is built for large, recurring rollouts, not one-off orders.\nThat's the framework. Everything after this slide is just showing you how those four principles play out across different applications." },
+  { num: 6, title: 'A Complete Fiber Portfolio', text: "This is the map of where we play. Nine categories: FTTH, Telecom & Backbone, Data Center, Enterprise Networks, Outdoor Deployments, Indoor Deployments, RF Overlay Distribution, Direct Burial & Armored, and Microduct & Blown Fiber.\nI'm going to walk through the main ones in detail over the next several slides, but the point of this slide is simply: whatever layer of the network you're building, we likely have a construction for it. You don't need to go to five different vendors for backbone, data center, and last-mile fiber." },
+  { num: 7, title: 'FTTH Solutions', text: "Let's start with fiber-to-the-home, because for a lot of you this is where the volume is.\nFour things worth calling out. First, bend-insensitive fiber, G.657.A2 or B3 single-mode, which matters because FTTH cable gets routed through tight corners, stapled around door frames, coiled in utility closets. Standard fiber loses performance in those conditions; this doesn't.\nSecond, drop and distribution cables in both round and figure-8 formats, sized specifically for last-mile, building entry, and in-home runs.\nThird, pre-connectorized options, factory-terminated assemblies, which matters a lot when you're trying to cut field installation time on a large rollout. Every minute a technician isn't splicing in the field is money saved.\nAnd fourth, this whole construction is tuned for cost-per-home-passed economics, because that's the metric that actually decides whether a national FTTH rollout is profitable." },
+  { num: 8, title: 'Telecom & Backbone Networks', text: "Moving up the network to backbone and long-haul.\nThe headline number here is attenuation: our G.652D core delivers ≤0.20 dB/km typical at 1550nm. Why does that matter in a sales conversation? Because low loss across the C-band means wider amplifier spacing, which directly translates into lower cost per route-kilometer for the operator. That's a number you can put in front of a network planning team.\nWe also offer high fiber-count loose-tube and ribbon constructions that scale to hundreds of fibers per cable, and everything is engineered to be DWDM-ready, the low loss and PMD performance that dense wavelength systems demand. And we build both aerial-rated and duct-rated versions, matched to whatever route the network is actually taking, we're not asking the customer to change their route to fit our cable." },
+  { num: 9, title: 'Data Center Solutions', text: "Data center is where the market is moving fastest right now, mostly because of AI.\nWe cover the full range, OM3, OM4, OM5 multimode plus OS2 single-mode, for spine-leaf, cross-connect, and inter-data-center links. We're qualified for low-loss performance at 40, 100, and 400 gig, and we offer MPO/MTP high-density trunk options in 12 and 24-fiber counts for fast, dense rack-to-rack connectivity.\nBut here's the number I'd lead with if you're talking to anyone touching AI infrastructure: AI racks can require up to 36 times the fiber of a traditional CPU-based rack. That's not an incremental increase, that's a structural shift in how data center fiber plant gets planned. If your prospect is building or expanding GPU clusters, this is the slide that gets their attention." },
+  { num: 10, title: 'Enterprise Networks', text: "For enterprise and campus customers, the conversation is a bit different, it's less about raw performance and more about compliance and practicality.\nWe offer LSZH and CPR-compliant indoor cable, halogen-free, built to whatever Euroclass the building requires. It's compatible with existing structured cabling standards and pathways, so it's a drop-in, not a rip-and-replace. We support LC, SC, and FC connectivity with pre-terminated patch cords and pigtails for fast cross-connect deployment, and we build for riser and campus backbone runs.\nThe hybrid migration path on the right is worth mentioning explicitly: you can run a fiber backbone between floors and buildings today, while existing copper keeps serving the edge, and then migrate desk-by-desk on the customer's own timeline. That's often the easiest way to get budget approved, nobody has to rip out working copper on day one." },
+  { num: 11, title: 'Outdoor Cable Portfolio', text: "For anything going outside, this is about surviving the elements over a long service life.\nUV-stabilized polyethylene jacket built to resist years of sun, rain, and temperature cycling. Gel-filled or dry water-blocking options, so the customer can pick based on climate and their own maintenance preference. Aerial and duct-rated, meaning span-tested for pole-line runs or pull-tested for conduit installation. Tight-buffered construction for easy handling and termination. Low-smoke, halogen-free jacketing. And full building-code documentation to whatever CPR Euroclass the project calls for.\nThe number to remember: operating range of minus 40 to plus 70 degrees Celsius, with extended-range constructions available for harsher climates. If someone's deploying somewhere with real temperature extremes, that's your reassurance." },
+  { num: 12, title: 'ADSS Solutions', text: "ADSS is a specific and important use case, that's All-Dielectric Self-Supporting cable, and it matters most on live power corridors.\nIt's all-dielectric, meaning no metallic components, nothing for lightning or induced current to travel through, which is the whole reason you'd choose ADSS over a metallic alternative near energized lines. It carries its mechanical load with a high-tensile aramid yarn strength member, rather than anything conductive. It's engineered for long-span capability, wide pole-to-pole and tower spans. And because it's self-supporting, it suspends directly between structures with no separate messenger wire required, that simplifies both installation and maintenance.\nIf your prospect is a utility, or an operator sharing poles with a utility, this is a category worth spending real time on." },
+  { num: 13, title: 'Direct Burial & Armored Solutions', text: "For anything going straight into the ground.\nWe offer steel tape or interlocked armor for mechanical protection, which also gives you rodent and crush resistance, that armor layer deters rodent intrusion and resists crushing during backfill and compaction, which is a real failure mode for unarmored buried cable. The jacket and core are qualified specifically for trenching straight into the ground, direct-burial-rated. And where conductive sheaths aren't permitted, we also offer dielectric armored constructions.\nThis is a straightforward, durability-led conversation, the customer's pain point is usually 'we don't want to dig this up again in five years.'" },
+  { num: 14, title: 'Microduct & Blown Fiber Solutions', text: "This is a strategic one because it changes the economics of how a network gets built. The idea in one line: install the duct network once, then blow fiber in only where and when it's actually needed.\nThree steps. One, lay the microduct: lightweight duct bundles get trenched or sub-ducted once, well ahead of actual fiber demand. Two, blow the fiber: compressed air installs a lightweight micro-cable through the duct, no trenching required, minimal disruption. Three, scale on demand: the operator adds or re-routes fiber strands as subscribers and capacity grow, because the duct is already in place.\nThis is a great conversation for anyone doing phased rollouts, or anyone who's been burned before by digging a trench for capacity they didn't end up needing yet." },
+  { num: 15, title: 'Fiber Types: G.652D, G.657, OM3, OM4, OM5', text: "This slide is your quick reference table, I'd use it more as a leave-behind or a technical anchor than something to read line by line live. But the shorthand is: G.652D is single-mode for backbone and long-haul, known for low water-peak attenuation. G.657.A1/A2 is single-mode for FTTH and indoor routing, known for being bend-insensitive. And OM3, OM4, OM5 are the multimode ladder for data center, OM3 for 10 gig, OM4 for 40/100 gig, OM5 for wideband SWDM applications.\nIf a prospect asks 'which fiber type do I need,' this table is the answer, and it's also a good way to demonstrate that we're speaking their technical language, not just selling generic cable." },
+  { num: 16, title: 'Manufacturing Excellence', text: "Let's come back up a level and talk about why the manufacturing side matters commercially, not just technically.\nWe run vertically integrated operations, from material qualification through to a finished, reeled cable, under continuous quality control. That happens across a certified global production network built specifically to industrialize designs at scale. And production capacity flexes, from pilot batches up to full national-rollout volumes, with the same specification and the same performance, reel after reel, year after year.\nWhy does the customer care? Faster time-to-market, consistent product quality, supply chain resilience, cost optimization at scale, and full lifecycle management. If you're talking to a procurement or supply-chain stakeholder rather than an engineer, this is the slide that speaks to them." },
+  { num: 17, title: 'CPR & Fire Safety Compliance', text: "This slide matters most for European indoor and building-code-sensitive customers, so read the room, if it's not relevant to the buyer, you can move through it quickly.\nEN 50575, the Construction Products Regulation, classifies a cable's reaction to fire across four dimensions, and every Inverto indoor cable is rated and documented on all four: reaction to fire, from general purpose up to the strictest life-safety routes; smoke production, from high smoke down to low smoke; flaming droplets, from droplets occurring down to none observed; and smoke acidity, from more corrosive down to least corrosive.\nThe takeaway for the customer: whatever fire-safety class their building or project requires, we can document compliance against it, this isn't a gap they need to manage themselves." },
+  { num: 18, title: 'Quality & Testing', text: "This is where you address the skepticism question before it's even asked, 'how do I know this actually performs at spec?'\nEvery single reel is optically tested before it ships, 100% factory attenuation and OTDR testing, not sample-checked. That's worth pausing on, because sample-checking is the industry norm in a lot of places, and we're not doing that. We test to IEC 60793-2 and Telcordia GR-20, verified against whatever standard the customer's spec actually requires. We run environmental and mechanical qualification, temperature cycling, tensile load, crush and bend testing under real-world stress. And every shipment has full traceability, batch and reel-level records connect back to its test data.\nIf you're talking to a technical buyer, this is often the slide that closes the credibility gap." },
+  { num: 19, title: 'Global Logistics', text: "Once the cable's built and tested, this is how it actually gets to the customer.\nWorldwide fulfillment network, production and distribution reach customers across every region Inverto serves. Flexible packaging, reel, drum, pull box, or cut length, matched to the project and installation method, so the crew in the field gets it in the format that works for them." },
+  { num: 20, title: 'Customization & OEM Services', text: "For customers thinking about private label, or with very specific technical requirements, this is the slide.\nEvery Inverto fiber cable starts the same way, with the customer's Customer Requirements Document. We offer private label and custom marking, the customer's brand, their part numbers, printed directly on the jacket. Custom jacket color and construction, fiber type, construction, armor, and jacket specified to their exact requirement. And bespoke packaging, reels, drums, pull boxes, or cut lengths, packaged the way their crews actually work." },
+  { num: 21, title: 'Reference Applications', text: "Quick tour of where this actually gets deployed in the field: national FTTH rollout for telecom and broadband operators; hyperscale and enterprise data centers for high-density AI, cloud, and colocation interconnect; broadcast and DTH distribution fiber and coax networks for satellite and cable operators, which is obviously close to Inverto's roots; utility and smart-grid networks using ADSS along live power-line and roadside corridors; and smart building and campus backbone for offices, education, and healthcare." },
+  { num: 22, title: 'Why Inverto', text: "This is your summary slide, the one to land on before you move to next steps." },
+  { num: 23, title: "Let's Build Your Network's Foundation Together (Call to Action)", text: "So where do we go from here? Three concrete next steps.\nStart with your Fiber CRD, request the Customer Requirements Document, and that's what actually defines your specification.\nI'd suggest we agree on one of these right now, while we're together, should we set up that CRD conversation, or would it help to get your team in front of our engineers first?" },
+  { num: 24, title: 'Closing / Contact', text: '' },
+];
+
 const CALL_SCRIPTS_DATA = [
   {
     key: 'lnb', color: 'blue',
@@ -958,7 +1009,7 @@ const TRACKER_SEED = [
 function loadState() {
   const raw = localStorage.getItem(STORAGE_KEY);
   if (raw) { try { return JSON.parse(raw); } catch (e) {} }
-  return { today: [], tomorrow: [], tracker: [], weeklyManual: {}, checkins: [], milestones: [], completedLog: [], callScriptLang: 'en', callScriptFields: {} };
+  return { today: [], tomorrow: [], tracker: [], weeklyManual: {}, checkins: [], milestones: [], completedLog: [], callScriptLang: 'en', callScriptFields: {}, fiberSlideIndex: 1, fiberNotes: {} };
 }
 let state = loadState();
 function save() {
@@ -1005,6 +1056,8 @@ function seedDefaults() {
   if (state.tracker.length === 0) { state.tracker = TRACKER_SEED.map(x => ({ id: uid(), ...x })); changed = true; }
   if (!state.callScriptLang) { state.callScriptLang = 'en'; changed = true; }
   if (!state.callScriptFields) { state.callScriptFields = {}; changed = true; }
+  if (!state.fiberSlideIndex) { state.fiberSlideIndex = 1; changed = true; }
+  if (!state.fiberNotes) { state.fiberNotes = {}; changed = true; }
   if (changed) save();
 }
 seedDefaults();
@@ -1626,6 +1679,88 @@ function renderCallScripts() {
   renderCsCard(activeCat, activeScript, cardArea);
 }
 
+// ---------- Fiber Presentation ----------
+function fpGoTo(num) {
+  state.fiberSlideIndex = Math.max(1, Math.min(FIBER_PRESENTATION_SCRIPT.length, num));
+  save();
+  renderFiberPresentation();
+}
+function fpPrev() { fpGoTo(state.fiberSlideIndex - 1); }
+function fpNext() { fpGoTo(state.fiberSlideIndex + 1); }
+function commitFpNote(slideNum, el) {
+  state.fiberNotes[slideNum] = el.textContent.trim();
+  save();
+}
+
+function renderFiberPresentation() {
+  const navRow = document.getElementById('fpSlideRow');
+  if (!navRow) return;
+
+  navRow.innerHTML = '';
+  FIBER_PRESENTATION_SCRIPT.forEach(s => {
+    const btn = document.createElement('button');
+    btn.className = 'fp-slide-btn' + (state.fiberSlideIndex === s.num ? ' active' : '');
+    btn.textContent = s.num;
+    btn.title = s.title || 'Opening';
+    btn.onclick = () => fpGoTo(s.num);
+    navRow.appendChild(btn);
+  });
+  document.getElementById('fpSlideNum').textContent = state.fiberSlideIndex;
+
+  const slide = FIBER_PRESENTATION_SCRIPT.find(s => s.num === state.fiberSlideIndex) || FIBER_PRESENTATION_SCRIPT[0];
+  const area = document.getElementById('fpCardArea');
+  area.innerHTML = '';
+
+  const card = document.createElement('div');
+  card.className = 'cs-card';
+  card.style.setProperty('--cat-color', 'var(--orange)');
+
+  const kicker = document.createElement('div');
+  kicker.className = 'cs-card-kicker';
+  kicker.textContent = '🎤 Slide ' + slide.num + ' of ' + FIBER_PRESENTATION_SCRIPT.length;
+  card.appendChild(kicker);
+
+  const head = document.createElement('div');
+  head.className = 'cs-card-head';
+  const title = document.createElement('div');
+  title.className = 'cs-card-title';
+  title.textContent = slide.title || 'Opening';
+  const copyBtn = document.createElement('button');
+  copyBtn.className = 'cs-copy-btn';
+  copyBtn.textContent = 'Copy';
+  copyBtn.onclick = () => copyCsScript(fillCsPlaceholders(slide.text), copyBtn);
+  head.appendChild(title); head.appendChild(copyBtn);
+  card.appendChild(head);
+
+  const sayLabel = document.createElement('div');
+  sayLabel.className = 'cs-say-label';
+  sayLabel.textContent = 'TALK TRACK';
+  card.appendChild(sayLabel);
+
+  const textEl = document.createElement('div');
+  textEl.className = 'cs-script-text';
+  textEl.innerHTML = slide.text ? csScriptHtml(slide.text) : '<span class="cs-empty-hint">No talk track provided for this slide yet.</span>';
+  card.appendChild(textEl);
+
+  const notesLabel = document.createElement('div');
+  notesLabel.className = 'cs-say-label';
+  notesLabel.style.marginTop = '16px';
+  notesLabel.textContent = 'YOUR NOTES';
+  card.appendChild(notesLabel);
+
+  const notesSpan = document.createElement('span');
+  notesSpan.className = 'wr-notes';
+  notesSpan.contentEditable = 'true';
+  notesSpan.spellcheck = false;
+  notesSpan.setAttribute('data-placeholder', 'Add your own phrasing or reminders for this slide…');
+  notesSpan.textContent = state.fiberNotes[slide.num] || '';
+  notesSpan.addEventListener('blur', () => commitFpNote(slide.num, notesSpan));
+  notesSpan.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); notesSpan.blur(); } });
+  card.appendChild(notesSpan);
+
+  area.appendChild(card);
+}
+
 function renderTargets() {
   const now = new Date();
   const wk = isoWeekKey(now);
@@ -1761,6 +1896,7 @@ function renderAll() {
   renderTaskListsAll();
   renderWorkRoadmap();
   renderCallScripts();
+  renderFiberPresentation();
   renderTracker();
   renderTargetCos();
   renderRoadmap();
